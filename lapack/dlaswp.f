@@ -114,7 +114,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DLASWP( N, A, LDA, K1, K2, IPIV, INCX )
-!$acc routine(DLASWP) worker nohost
+!$acc routine vector
 !
 !  -- LAPACK auxiliary routine (version 3.7.1) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -161,7 +161,7 @@
             DO 20 I = I1, I2, INC
                IP = IPIV( IX )
                IF( IP.NE.I ) THEN
-!$acc loop worker vector private(K,TEMP)
+!$acc loop vector private(TEMP)
                   DO 10 K = J, J + 31
                      TEMP = A( I, K )
                      A( I, K ) = A( IP, K )
@@ -178,7 +178,7 @@
          DO 50 I = I1, I2, INC
             IP = IPIV( IX )
             IF( IP.NE.I ) THEN
-!$acc loop worker vector private(K,TEMP)
+!$acc loop vector private(TEMP)
                DO 40 K = N32, N
                   TEMP = A( I, K )
                   A( I, K ) = A( IP, K )

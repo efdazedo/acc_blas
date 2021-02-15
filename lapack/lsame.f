@@ -52,7 +52,7 @@
 !
 !  =====================================================================
       LOGICAL FUNCTION LSAME(CA,CB)
-!$acc routine seq nohost
+!$acc routine vector
 !
 !  -- Reference BLAS level1 routine (version 3.1) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -60,7 +60,7 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      CHARACTER, value ::  CA,CB
+      CHARACTER, intent(in) ::  CA,CB
 !     ..
 !
 ! =====================================================================

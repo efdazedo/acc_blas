@@ -161,6 +161,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DGBSV( N, KL, KU, NRHS, AB, LDAB, IPIV, B, LDB, INFO )
+!$acc routine vector
 !
 !  -- LAPACK driver routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -177,8 +178,10 @@
 !
 !  =====================================================================
 !
+#if (0)
 !     .. External Subroutines ..
       EXTERNAL           DGBTRF, DGBTRS, XERBLA
+#endif
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          MAX

@@ -1,5 +1,5 @@
       SUBROUTINE DGETRF( M, N, A, LDA, IPIV, INFO )
-!$acc routine(DGETRF) worker nohost
+!$acc routine vector
 !
 !  -- LAPACK routine (version 3.0) --
 !     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
@@ -124,7 +124,7 @@
 !
             IF( INFO.EQ.0 .AND. IINFO.GT.0 )
      $         INFO = IINFO + J - 1
-!$acc loop worker vector private(I)
+!$acc loop vector 
             DO 10 I = J, MIN( M, J+JB-1 )
                IPIV( I ) = J - 1 + IPIV( I )
    10       CONTINUE

@@ -144,6 +144,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DGBTF2( M, N, KL, KU, AB, LDAB, IPIV, INFO )
+!$acc routine vector 
 !
 !  -- LAPACK computational routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -166,6 +167,7 @@
 !     ..
 !     .. Local Scalars ..
       INTEGER            I, J, JP, JU, KM, KV
+#if (0)
 !     ..
 !     .. External Functions ..
       INTEGER            IDAMAX
@@ -173,6 +175,7 @@
 !     ..
 !     .. External Subroutines ..
       EXTERNAL           DGER, DSCAL, DSWAP, XERBLA
+#endif
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -213,6 +216,7 @@
 !     Set fill-in elements in columns KU+2 to KV to zero.
 !
       DO 20 J = KU + 2, MIN( KV, N )
+!$acc loop vector
          DO 10 I = KV - J + 2, KL
             AB( I, J ) = ZERO
    10    CONTINUE
@@ -228,6 +232,7 @@
 !        Set fill-in elements in column J+KV to zero.
 !
          IF( J+KV.LE.N ) THEN
+!$acc loop vector
             DO 30 I = 1, KL
                AB( I, J+KV ) = ZERO
    30       CONTINUE

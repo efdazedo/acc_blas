@@ -1,5 +1,5 @@
       SUBROUTINE DGETF2( M, N, A, LDA, IPIV, INFO )
-!$acc routine(DGETF2) worker nohost
+!$acc routine vector
 !
 !  -- LAPACK routine (version 2.0) --
 !     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,

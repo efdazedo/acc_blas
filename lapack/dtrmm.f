@@ -176,7 +176,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DTRMM(SIDE,UPLO,TRANSA,DIAG,M,N,ALPHA,A,LDA,B,LDB)
-!$acc routine(DTRMM) worker nohost
+!$acc routine vector
 !
 !  -- Reference BLAS level3 routine (version 3.7.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -184,12 +184,13 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      DOUBLE PRECISION ALPHA
-      INTEGER LDA,LDB,M,N
-      CHARACTER, value ::  DIAG,SIDE,TRANSA,UPLO
+      DOUBLE PRECISION, intent(in) ::  ALPHA
+      INTEGER, intent(in) ::  LDA,LDB,M,N
+      CHARACTER, intent(in) ::  DIAG,SIDE,TRANSA,UPLO
 !     ..
 !     .. Array Arguments ..
-      DOUBLE PRECISION A(LDA,*),B(LDB,*)
+      DOUBLE PRECISION, intent(in) ::  A(LDA,*)
+      DOUBLE PRECISION, intent(inout) ::  B(LDB,*)
 !     ..
 !
 !  =====================================================================
@@ -259,7 +260,7 @@
 !     And when  alpha.eq.zero.
 !
       IF (ALPHA.EQ.ZERO) THEN
-!$acc loop collapse(2) worker vector private(I,J)
+!$acc loop vector collapse(2) 
           DO 20 J = 1,N
               DO 10 I = 1,M
                   B(I,J) = ZERO
@@ -276,11 +277,11 @@
 !           Form  B := alpha*A*B.
 !
               IF (UPPER) THEN
-!$acc loop worker vector private(I,J,K,TEMP)
                   DO 50 J = 1,N
                       DO 40 K = 1,M
                           IF (B(K,J).NE.ZERO) THEN
                               TEMP = ALPHA*B(K,J)
+!$acc loop vector
                               DO 30 I = 1,K - 1
                                   B(I,J) = B(I,J) + TEMP*A(I,K)
    30                         CONTINUE
@@ -290,13 +291,13 @@
    40                 CONTINUE
    50             CONTINUE
               ELSE
-!$acc loop worker vector private(I,J,K,TEMP)
                   DO 80 J = 1,N
                       DO 70 K = M,1,-1
                           IF (B(K,J).NE.ZERO) THEN
                               TEMP = ALPHA*B(K,J)
                               B(K,J) = TEMP
                               IF (NOUNIT) B(K,J) = B(K,J)*A(K,K)
+!$acc loop vector
                               DO 60 I = K + 1,M
                                   B(I,J) = B(I,J) + TEMP*A(I,K)
    60                         CONTINUE
@@ -309,11 +310,11 @@
 !           Form  B := alpha*A**T*B.
 !
               IF (UPPER) THEN
-!$acc loop worker vector private(I,J,K,TEMP)
                   DO 110 J = 1,N
                       DO 100 I = M,1,-1
                           TEMP = B(I,J)
                           IF (NOUNIT) TEMP = TEMP*A(I,I)
+!$acc loop vector reduction(+:TEMP)
                           DO 90 K = 1,I - 1
                               TEMP = TEMP + A(K,I)*B(K,J)
    90                     CONTINUE
@@ -321,11 +322,11 @@
   100                 CONTINUE
   110             CONTINUE
               ELSE
-!$acc loop worker vector private(I,J,K,TEMP)
                   DO 140 J = 1,N
                       DO 130 I = 1,M
                           TEMP = B(I,J)
                           IF (NOUNIT) TEMP = TEMP*A(I,I)
+!$acc loop vector reduction(+:TEMP)
                           DO 120 K = I + 1,M
                               TEMP = TEMP + A(K,I)*B(K,J)
   120                     CONTINUE
@@ -340,16 +341,17 @@
 !           Form  B := alpha*B*A.
 !
               IF (UPPER) THEN
-!$acc loop worker vector private(I,J,K,TEMP)
                   DO 180 J = N,1,-1
                       TEMP = ALPHA
                       IF (NOUNIT) TEMP = TEMP*A(J,J)
+!$acc loop vector
                       DO 150 I = 1,M
                           B(I,J) = TEMP*B(I,J)
   150                 CONTINUE
                       DO 170 K = 1,J - 1
                           IF (A(K,J).NE.ZERO) THEN
                               TEMP = ALPHA*A(K,J)
+!$acc loop vector
                               DO 160 I = 1,M
                                   B(I,J) = B(I,J) + TEMP*B(I,K)
   160                         CONTINUE
@@ -357,16 +359,17 @@
   170                 CONTINUE
   180             CONTINUE
               ELSE
-!$acc loop worker vector private(I,J,K,TEMP)
                   DO 220 J = 1,N
                       TEMP = ALPHA
                       IF (NOUNIT) TEMP = TEMP*A(J,J)
+!$acc loop vector
                       DO 190 I = 1,M
                           B(I,J) = TEMP*B(I,J)
   190                 CONTINUE
                       DO 210 K = J + 1,N
                           IF (A(K,J).NE.ZERO) THEN
                               TEMP = ALPHA*A(K,J)
+!$acc loop vector
                               DO 200 I = 1,M
                                   B(I,J) = B(I,J) + TEMP*B(I,K)
   200                         CONTINUE
@@ -379,11 +382,11 @@
 !           Form  B := alpha*B*A**T.
 !
               IF (UPPER) THEN
-!$acc loop worker vector private(I,J,K,TEMP)
                   DO 260 K = 1,N
                       DO 240 J = 1,K - 1
                           IF (A(J,K).NE.ZERO) THEN
                               TEMP = ALPHA*A(J,K)
+!$acc loop vector
                               DO 230 I = 1,M
                                   B(I,J) = B(I,J) + TEMP*B(I,K)
   230                         CONTINUE
@@ -392,17 +395,18 @@
                       TEMP = ALPHA
                       IF (NOUNIT) TEMP = TEMP*A(K,K)
                       IF (TEMP.NE.ONE) THEN
+!$acc loop vector
                           DO 250 I = 1,M
                               B(I,K) = TEMP*B(I,K)
   250                     CONTINUE
                       END IF
   260             CONTINUE
               ELSE
-!$acc loop worker vector private(I,J,K,TEMP)
                   DO 300 K = N,1,-1
                       DO 280 J = K + 1,N
                           IF (A(J,K).NE.ZERO) THEN
                               TEMP = ALPHA*A(J,K)
+!$acc loop vector
                               DO 270 I = 1,M
                                   B(I,J) = B(I,J) + TEMP*B(I,K)
   270                         CONTINUE
@@ -411,6 +415,7 @@
                       TEMP = ALPHA
                       IF (NOUNIT) TEMP = TEMP*A(K,K)
                       IF (TEMP.NE.ONE) THEN
+!$acc loop vector
                           DO 290 I = 1,M
                               B(I,K) = TEMP*B(I,K)
   290                     CONTINUE

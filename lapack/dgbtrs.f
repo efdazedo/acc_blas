@@ -137,6 +137,7 @@
 !  =====================================================================
       SUBROUTINE DGBTRS( TRANS, N, KL, KU, NRHS, AB, LDAB, IPIV, B, LDB,
      $                   INFO )
+!$acc routine vector
 !
 !  -- LAPACK computational routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -163,11 +164,11 @@
       INTEGER            I, J, KD, L, LM
 !     ..
 !     .. External Functions ..
-      LOGICAL            LSAME
-      EXTERNAL           LSAME
+!      LOGICAL            LSAME
+!      EXTERNAL           LSAME
 !     ..
 !     .. External Subroutines ..
-      EXTERNAL           DGEMV, DGER, DSWAP, DTBSV, XERBLA
+!      EXTERNAL           DGEMV, DGER, DSWAP, DTBSV, XERBLA
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN

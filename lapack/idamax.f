@@ -70,7 +70,7 @@
 !>
 !  =====================================================================
       INTEGER FUNCTION IDAMAX(N,DX,INCX)
-!$acc routine(IDAMAX) worker nohost
+!$acc routine vector 
 !
 !  -- Reference BLAS level1 routine (version 3.8.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -102,12 +102,15 @@
 !        code for increment equal to 1
 !
          DMAX = DABS(DX(1))
+!$acc  loop vector                                                       &
+!$acc& reduction(min:idamax) reduction(max:dmax)
          DO I = 2,N
             IF (DABS(DX(I)).GT.DMAX) THEN
                IDAMAX = I
                DMAX = DABS(DX(I))
             END IF
          END DO
+
       ELSE
 !
 !        code for increment not equal to 1
@@ -115,6 +118,8 @@
          IX = 1
          DMAX = DABS(DX(1))
          IX = IX + INCX
+!$acc  loop vector                                                       &
+!$acc& reduction(min:idamax) reduction(max:dmax)
          DO I = 2,N
             IF (DABS(DX(IX)).GT.DMAX) THEN
                IDAMAX = I

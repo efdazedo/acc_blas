@@ -1,10 +1,12 @@
       SUBROUTINE DGER  ( M, N, ALPHA, X, INCX, Y, INCY, A, LDA )
-!$acc routine(DGER) worker nohost
+!$acc routine vector
 !     .. Scalar Arguments ..
-      DOUBLE PRECISION   ALPHA
-      INTEGER            INCX, INCY, LDA, M, N
+      DOUBLE PRECISION,intent(in) ::    ALPHA
+      INTEGER, intent(in) ::            INCX, INCY, LDA, M, N
 !     .. Array Arguments ..
-      DOUBLE PRECISION   A( LDA, * ), X( * ), Y( * )
+      DOUBLE PRECISION, intent(in)    ::   X( * ), Y( * )
+      DOUBLE PRECISION, intent(inout) ::   A( LDA, * )
+
 !     ..
 !
 !  Purpose
@@ -126,9 +128,8 @@
       END IF
       JY0 = JY
       IF( INCX.EQ.1 )THEN
-!$acc    loop  worker private(J)
+!$acc    loop  vector collapse(2) private(JY,TEMP)
          DO J = 1, N
-!$acc    loop vector private(I,JY,TEMP)
          DO I = 1, M
             JY = JY0 + (J-1)*INCY
             TEMP = ALPHA*Y( JY )
@@ -142,9 +143,8 @@
             KX = 1 - ( M - 1 )*INCX
          END IF
          IX0  = KX
-!$acc loop worker private(J)
+!$acc loop vector collapse(2) private(JY,TEMP,IX)
          DO J = 1, N
-!$acc loop vector private(I,JY,TEMP,IX)
          DO I = 1, M
             JY = JY0 + (J-1)*INCY
             TEMP = ALPHA*Y( JY )

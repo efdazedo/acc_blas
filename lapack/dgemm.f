@@ -186,7 +186,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DGEMM(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
-!$acc routine(DGEMM) worker  nohost 
+!$acc routine vector
 !
 !  -- Reference BLAS level3 routine (version 3.7.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -194,12 +194,13 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      DOUBLE PRECISION ALPHA,BETA
-      INTEGER   K,LDA,LDB,LDC,M,N
-      CHARACTER   TRANSA,TRANSB
+      DOUBLE PRECISION, intent(in) :: ALPHA,BETA
+      INTEGER, intent(in) ::   K,LDA,LDB,LDC,M,N
+      CHARACTER, intent(in) ::   TRANSA,TRANSB
 !     ..
 !     .. Array Arguments ..
-      DOUBLE PRECISION A(LDA,*),B(LDB,*),C(LDC,*)
+      DOUBLE PRECISION, intent(in) ::  A(LDA,*),B(LDB,*)
+      DOUBLE PRECISION, intent(inout) ::  C(LDC,*)
 !     ..
 !
 !  =====================================================================
@@ -281,14 +282,14 @@
 !
       IF (ALPHA.EQ.ZERO) THEN
           IF (BETA.EQ.ZERO) THEN
-!$acc loop collapse(2) worker vector private(I,J)
+!$acc loop vector collapse(2) 
               DO 20 J = 1,N
                   DO 10 I = 1,M
                       C(I,J) = ZERO
    10             CONTINUE
    20         CONTINUE
           ELSE
-!$acc loop collapse(2) worker vector private(I,J)
+!$acc loop vector collapse(2) 
               DO 40 J = 1,N
                   DO 30 I = 1,M
                       C(I,J) = BETA*C(I,J)
@@ -306,20 +307,20 @@
 !           Form  C := alpha*A*B + beta*C.
 !
                   IF (BETA.EQ.ZERO) THEN
-!$acc loop collapse(2) worker vector   private(I,J)
+!$acc loop vector collapse(2) 
                       DO 50 J = 1,N
                       DO 50 I = 1,M
                           C(I,J) = ZERO
    50                 CONTINUE
                   ELSE IF (BETA.NE.ONE) THEN
-!$acc loop collapse(2) worker vector private(I,J)
+!$acc loop vector collapse(2) 
                       DO 60 J = 1,N
                       DO 60 I = 1,M
                           C(I,J) = BETA*C(I,J)
    60                 CONTINUE
                   END IF
 
-!$acc loop collapse(2) worker vector private(I,J,L,TEMP)
+!$acc loop vector collapse(2) private(L,TEMP)
                   do J=1,N
                   do I=1,M
                     TEMP = ZERO
@@ -334,7 +335,7 @@
 !
 !           Form  C := alpha*A**T*B + beta*C
 !
-!$acc loop  collapse(2) worker vector private(I,J,L,TEMP)
+!$acc loop  vector collapse(2) private(L,TEMP)
               DO 120 J = 1,N
                   DO 110 I = 1,M
                       TEMP = ZERO
@@ -355,20 +356,20 @@
 !           Form  C := alpha*A*B**T + beta*C
 !
                   IF (BETA.EQ.ZERO) THEN
-!$acc loop collapse(2) worker vector private(I,J)
+!$acc loop vector collapse(2) 
                       DO 130 J = 1,N
                       DO 130 I = 1,M
                           C(I,J) = ZERO
   130                 CONTINUE
                   ELSE IF (BETA.NE.ONE) THEN
-!$acc loop collapse(2) worker vector private(I,J)
+!$acc loop vector collapse(2) 
                       DO 140 J = 1,N
                       DO 140 I = 1,M
                           C(I,J) = BETA*C(I,J)
   140                 CONTINUE
                   END IF
 
-!$acc loop collapse(2) worker vector private(I,J,L,TEMP)
+!$acc loop vector collapse(2) private(L,TEMP)
                   do J=1,N
                   do I=1,M
                      TEMP = ZERO
@@ -382,7 +383,7 @@
 !
 !           Form  C := alpha*A**T*B**T + beta*C
 !
-!$acc loop  collapse(2) worker vector private(I,J,L,TEMP)
+!$acc loop  vector collapse(2) private(L,TEMP)
               DO 200 J = 1,N
                   DO 190 I = 1,M
                       TEMP = ZERO

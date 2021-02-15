@@ -1,5 +1,5 @@
       SUBROUTINE DGETRS( TRANS, N, NRHS, A, LDA, IPIV, B, LDB, INFO )
-!$acc routine(DGETRS) worker nohost
+!$acc routine vector
 !
 !  -- LAPACK routine (version 3.0) --
 !     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,

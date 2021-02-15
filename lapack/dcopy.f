@@ -81,7 +81,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DCOPY(N,DX,INCX,DY,INCY)
-!$acc routine(DCOPY) worker nohost
+!$acc routine vector
 !
 !  -- Reference BLAS level1 routine (version 3.8.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -113,14 +113,14 @@
 !
          M = MOD(N,7)
          IF (M.NE.0) THEN
-!$acc loop worker vector private(I)
+!$acc loop vector 
             DO I = 1,M
                DY(I) = DX(I)
             END DO
             IF (N.LT.7) RETURN
          END IF
          MP1 = M + 1
-!$acc loop worker vector private(I)
+!$acc loop vector 
          DO I = MP1,N,7
             DY(I) = DX(I)
             DY(I+1) = DX(I+1)
@@ -141,7 +141,7 @@
          IF (INCY.LT.0) IY = (-N+1)*INCY + 1
          IX0 = IX
          IY0 = IY
-!$acc loop worker vector private(I,IX,IY)
+!$acc loop vector private(IX,IY)
          DO I = 1,N
             IX = IX0 + (I-1)*INCX
             IY = IY0 + (I-1)*INCY

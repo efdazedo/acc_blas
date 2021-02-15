@@ -78,7 +78,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DSCAL(N,DA,DX,INCX)
-!$acc routine(DSCAL) worker nohost
+!$acc routine vector
 !
 !  -- Reference BLAS level1 routine (version 3.8.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -86,8 +86,8 @@
 !     November 2017
 !
 !     .. Scalar Arguments ..
-      DOUBLE PRECISION DA
-      INTEGER INCX,N
+      DOUBLE PRECISION, intent(in) :: DA
+      INTEGER, intent(in) ::  INCX,N
 !     ..
 !     .. Array Arguments ..
       DOUBLE PRECISION DX(*)
@@ -111,13 +111,14 @@
 !
          M = MOD(N,5)
          IF (M.NE.0) THEN
-!$acc loop worker vector private(I)
+!$acc loop vector private(I)
             DO I = 1,M
                DX(I) = DA*DX(I)
             END DO
             IF (N.LT.5) RETURN
          END IF
          MP1 = M + 1
+!$acc loop vector private(I)
          DO I = MP1,N,5
             DX(I) = DA*DX(I)
             DX(I+1) = DA*DX(I+1)
@@ -130,7 +131,7 @@
 !        code for increment not equal to 1
 !
          NINCX = N*INCX
-!$acc loop worker vector private(I)
+!$acc loop vector private(I)
          DO I = 1,NINCX,INCX
             DX(I) = DA*DX(I)
          END DO

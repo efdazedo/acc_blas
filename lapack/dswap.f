@@ -81,7 +81,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DSWAP(N,DX,INCX,DY,INCY)
-!$acc routine(DSWAP) worker nohost
+!$acc routine vector
 !
 !  -- Reference BLAS level1 routine (version 3.8.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -114,7 +114,7 @@
 !
          M = MOD(N,3)
          IF (M.NE.0) THEN
-!$acc loop worker vector private(I,DTEMP)
+!$acc loop vector private(DTEMP)
             DO I = 1,M
                DTEMP = DX(I)
                DX(I) = DY(I)
@@ -123,7 +123,7 @@
             IF (N.LT.3) RETURN
          END IF
          MP1 = M + 1
-!$acc loop worker vector private(I,DTEMP)
+!$acc loop vector private(DTEMP)
          DO I = MP1,N,3
             DTEMP = DX(I)
             DX(I) = DY(I)
@@ -146,7 +146,7 @@
          IF (INCY.LT.0) IY = (-N+1)*INCY + 1
          IX0 = IX
          IY0 = IY
-!$acc loop worker vector private(I,IX,IY,DTEMP)
+!$acc loop vector private(IX,IY,DTEMP)
          DO I = 1,N
             IX = IX0 + (I-1)*INCX
             IY = IY0 + (I-1)*INCX

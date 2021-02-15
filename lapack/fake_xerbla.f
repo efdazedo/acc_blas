@@ -1,5 +1,5 @@
        subroutine fake_xerbla(info)
-!$acc  routine(fake_xerbla) seq  
+!$acc  routine vector
        integer info
        print*,'xerbla:' ,info
        return

@@ -39,6 +39,7 @@
 
       nwalkers = 1024 
       nmax = 100
+      n = nmax
       print*,'n,nwalkers,nthreads',n,nwalkers,nthreads
 
       allocate( A(nmax,nmax,nwalkers)) 
@@ -51,11 +52,11 @@
 !$acc    enter data copyin(A,B)
 
 
-      do ibeta=0,2
-      do ialpha=0,2
       do mm=1,nmax,nmax/3
       do nn=1,nmax,nmax/3
       do kk=1,nmax,nmax/3
+      do ibeta=0,2
+      do ialpha=1,2
       do itransA=1,2
       do itransB=1,2
 
@@ -72,7 +73,7 @@
          ld3 = size(C,1)
 
          
-!$acc   data  pcopy(C)  &
+!$acc   data   pcopy(C)                                      &
 !$acc&  pcopyin(transA,transB,mm,nn,kk,alpha,beta,ld1,ld2,ld3) 
 
          call system_clock(t1,count_rate)
