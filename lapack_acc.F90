@@ -2,7 +2,10 @@
        implicit none
        public
 #define XERBLA(msg,info) fake_xerbla(info)
+#define xerbla(msg,info) fake_xerbla(info)
+
 #define ILAENV( ISPEC, NAME, OPTS, N1, N2, N3, N4) (64)
+#define ilaenv( ISPEC, NAME, OPTS, N1, N2, N3, N4) (64)
 
        contains
 #include "lapack/fake_xerbla.f"

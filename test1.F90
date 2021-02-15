@@ -22,8 +22,8 @@
 #endif
 
 !$acc init
-      nwalkers = 1024 
-      n = 100
+      nwalkers = 1 
+      n = 2
       print*,'n,nwalkers',n,nwalkers
 
       allocate( A(n,n,nwalkers), B(n,n,nwalkers), C(n,n,nwalkers))
@@ -59,7 +59,7 @@
       call system_clock(t1,count_rate)
 !$acc  parallel default(none) present(n,nwalkers,A,B,C)                  &
 !$acc& pcopyin(mm,nn,kk,ld1,ld2,ld3,alpha,beta)
-!$acc  loop gang                                                         &
+!$acc  loop independent gang                                                         &
 !$acc& private(walker)
       do walker=1,nwalkers
         call  dgemm('N','N', mm,nn,kk,                                   &
@@ -78,6 +78,7 @@
 ! ---------------------------
 
 !$acc update host(A,B,C)
+!$acc wait
 
       call system_clock(t1,count_rate)
 !$omp parallel default(none) shared(n,nwalkers,A,B,hC)
