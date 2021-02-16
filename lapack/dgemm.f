@@ -231,8 +231,10 @@
 !     transposed and set  NROWA, NCOLA and  NROWB  as the number of rows
 !     and  columns of  A  and the  number of  rows  of  B  respectively.
 !
-      NOTA = LSAME(TRANSA,'N')
-      NOTB = LSAME(TRANSB,'N')
+!      NOTA = LSAME(TRANSA,'N')
+!      NOTB = LSAME(TRANSB,'N')
+      NOTA = (TRANSA.EQ.'N').OR.(TRANSA.EQ.'n')
+      NOTB = (TRANSB.EQ.'N').OR.(TRANSB.EQ.'n')
       IF (NOTA) THEN
           NROWA = M
           NCOLA = K
@@ -283,18 +285,18 @@
       IF (ALPHA.EQ.ZERO) THEN
           IF (BETA.EQ.ZERO) THEN
 !$acc loop vector collapse(2) 
-              DO 20 J = 1,N
-                  DO 10 I = 1,M
+              DO J = 1,N
+              DO I = 1,M
                       C(I,J) = ZERO
-   10             CONTINUE
-   20         CONTINUE
+              ENDDO
+              ENDDO
           ELSE
 !$acc loop vector collapse(2) 
-              DO 40 J = 1,N
-                  DO 30 I = 1,M
+              DO J = 1,N
+              DO I = 1,M
                       C(I,J) = BETA*C(I,J)
-   30             CONTINUE
-   40         CONTINUE
+              ENDDO
+              ENDDO
           END IF
           RETURN
       END IF
@@ -308,16 +310,18 @@
 !
                   IF (BETA.EQ.ZERO) THEN
 !$acc loop vector collapse(2) 
-                      DO 50 J = 1,N
-                      DO 50 I = 1,M
+                      DO J = 1,N
+                      DO I = 1,M
                           C(I,J) = ZERO
-   50                 CONTINUE
+                      ENDDO
+                      ENDDO
                   ELSE IF (BETA.NE.ONE) THEN
 !$acc loop vector collapse(2) 
-                      DO 60 J = 1,N
-                      DO 60 I = 1,M
+                      DO  J = 1,N
+                      DO  I = 1,M
                           C(I,J) = BETA*C(I,J)
-   60                 CONTINUE
+                      ENDDO
+                      ENDDO
                   END IF
 
 !$acc loop vector collapse(2) private(L,TEMP)
@@ -336,19 +340,19 @@
 !           Form  C := alpha*A**T*B + beta*C
 !
 !$acc loop  vector collapse(2) private(L,TEMP)
-              DO 120 J = 1,N
-                  DO 110 I = 1,M
+              DO J = 1,N
+              DO I = 1,M
                       TEMP = ZERO
-                      DO 100 L = 1,K
+                      DO L = 1,K
                           TEMP = TEMP + A(L,I)*B(L,J)
-  100                 CONTINUE
+                      ENDDO
                       IF (BETA.EQ.ZERO) THEN
                           C(I,J) = ALPHA*TEMP
                       ELSE
                           C(I,J) = ALPHA*TEMP + BETA*C(I,J)
                       END IF
-  110             CONTINUE
-  120         CONTINUE
+              ENDDO
+              ENDDO
           END IF
       ELSE
           IF (NOTA) THEN
@@ -357,16 +361,18 @@
 !
                   IF (BETA.EQ.ZERO) THEN
 !$acc loop vector collapse(2) 
-                      DO 130 J = 1,N
-                      DO 130 I = 1,M
+                      DO J = 1,N
+                      DO I = 1,M
                           C(I,J) = ZERO
-  130                 CONTINUE
+                      ENDDO
+                      ENDDO
                   ELSE IF (BETA.NE.ONE) THEN
 !$acc loop vector collapse(2) 
-                      DO 140 J = 1,N
-                      DO 140 I = 1,M
+                      DO J = 1,N
+                      DO I = 1,M
                           C(I,J) = BETA*C(I,J)
-  140                 CONTINUE
+                      ENDDO
+                      ENDDO
                   END IF
 
 !$acc loop vector collapse(2) private(L,TEMP)
@@ -384,19 +390,19 @@
 !           Form  C := alpha*A**T*B**T + beta*C
 !
 !$acc loop  vector collapse(2) private(L,TEMP)
-              DO 200 J = 1,N
-                  DO 190 I = 1,M
+              DO J = 1,N
+              DO I = 1,M
                       TEMP = ZERO
-                      DO 180 L = 1,K
+                      DO L = 1,K
                           TEMP = TEMP + A(L,I)*B(J,L)
-  180                 CONTINUE
+                      ENDDO
                       IF (BETA.EQ.ZERO) THEN
                           C(I,J) = ALPHA*TEMP
                       ELSE
                           C(I,J) = ALPHA*TEMP + BETA*C(I,J)
                       END IF
-  190             CONTINUE
-  200         CONTINUE
+              ENDDO
+              ENDDO
           END IF
       END IF
 !
@@ -404,4 +410,4 @@
 !
 !     End of DGEMM .
 !
-      END
+      END SUBROUTINE DGEMM
