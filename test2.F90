@@ -2,10 +2,10 @@
 !     simple test of calling dgemm
       program test2
       use lapack_mod, only : dgemm_cpu => dgemm
-      use lapack_acc, only : dgemm
+      use lapack_acc
       use omp_lib
       implicit none
-      integer, parameter :: idebug = 1
+      integer, parameter :: idebug = 0
       double precision, parameter :: tol = 1d-6
 
       integer :: n,nwalkers
