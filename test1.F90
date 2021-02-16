@@ -22,8 +22,8 @@
 #endif
 
 !$acc init
-      nwalkers = 1 
-      n = 2
+      nwalkers = 1024 
+      n = 2*128
       print*,'n,nwalkers',n,nwalkers
 
       allocate( A(n,n,nwalkers), B(n,n,nwalkers), C(n,n,nwalkers))
