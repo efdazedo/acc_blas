@@ -69,7 +69,7 @@
 !
 !  =====================================================================
       SUBROUTINE XERBLA( SRNAME, INFO )
-!$acc routine seq nohost
+!$acc routine vector
 !
 !  -- LAPACK auxiliary routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -77,7 +77,7 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      CHARACTER*(*)      SRNAME
+       CHARACTER*(*)      SRNAME
       INTEGER            INFO
 !     ..
 !
