@@ -9,10 +9,12 @@
 
        contains
 #include "lapack/fake_xerbla.f"
-#include "lapack/lsame.f"
-#include "lapack/dgemm.f"
+#include "lapack/tolower.f"
+#include "lapack/fake_lsame.f"
 
-#if (0)
+#include "lapack/dgemm.f"
+!#include "lapack/dgemm_acc.F90"
+
 #include "lapack/idamax.f"
 #include "lapack/dscal.f"
 #include "lapack/dcopy.f"
@@ -46,6 +48,5 @@
 
 
 
-#endif
 
        end module lapack_acc
