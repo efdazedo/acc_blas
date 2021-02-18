@@ -163,12 +163,13 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      DOUBLE PRECISION ALPHA,BETA
-      INTEGER INCX,INCY,LDA,M,N
-      CHARACTER TRANS
+      DOUBLE PRECISION, intent(in) ::  ALPHA,BETA
+      INTEGER, intent(in) :: INCX,INCY,LDA,M,N
+      CHARACTER, intent(in) ::  TRANS
 !     ..
 !     .. Array Arguments ..
-      DOUBLE PRECISION A(LDA,*),X(*),Y(*)
+      DOUBLE PRECISION, intent(in) ::  A(LDA,*),X(*)
+      DOUBLE PRECISION, intent(inout) ::  Y(*)
 !     ..
 !
 !  =====================================================================
@@ -227,7 +228,7 @@
 !     Set  LENX  and  LENY, the lengths of the vectors x and y, and set
 !     up the start points in  X  and  Y.
 !
-      IF (LSAME(TRANS,'N')) THEN
+      IF (is_N) THEN
           LENX = N
           LENY = M
       ELSE
@@ -281,7 +282,7 @@
           END IF
       END IF
       IF (ALPHA.EQ.ZERO) RETURN
-      IF (LSAME(TRANS,'N')) THEN
+      IF (is_N) THEN
 !
 !        Form  y := alpha*A*x + y.
 !

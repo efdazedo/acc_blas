@@ -196,11 +196,12 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      INTEGER INCX,K,LDA,N
-      CHARACTER DIAG,TRANS,UPLO
+      INTEGER, intent(in) ::  INCX,K,LDA,N
+      CHARACTER, intent(in) ::  DIAG,TRANS,UPLO
 !     ..
 !     .. Array Arguments ..
-      DOUBLE PRECISION A(LDA,*),X(*)
+      DOUBLE PRECISION, intent(in) ::  A(LDA,*)
+      DOUBLE PRECISION, intent(inout) ::  X(*)
 !     ..
 !
 !  =====================================================================
@@ -213,6 +214,9 @@
       DOUBLE PRECISION TEMP
       INTEGER I,INFO,IX,J,JX,KPLUS1,KX,L
       LOGICAL NOUNIT
+      logical :: is_UU,is_UL
+      logical :: is_TN,is_TC,is_TT
+      logical :: is_DU,is_DN
 !     ..
 !     .. External Functions ..
 !      LOGICAL LSAME
@@ -228,12 +232,25 @@
 !     Test the input parameters.
 !
       INFO = 0
-      IF (.NOT.LSAME(UPLO,'U') .AND. .NOT.LSAME(UPLO,'L')) THEN
+
+
+      is_UU = (UPLO.eq.'U').or.(UPLO.eq.'u')
+      is_UL = (UPLO.eq.'L').or.(UPLO.eq.'l')
+
+      is_TN = (TRANS.eq.'N').or.(TRANS.eq.'n')
+      is_TC = (TRANS.eq.'C').or.(TRANS.eq.'c')
+      is_TT = (TRANS.eq.'T').or.(TRANS.eq.'t')
+
+      is_DU = (DIAG.eq.'U').or.(DIAG.eq.'u')
+      is_DN = (DIAG.eq.'N').or.(DIAG.eq.'n')
+
+
+      IF (.NOT.is_UU .AND. .NOT.is_UL) THEN
           INFO = 1
-      ELSE IF (.NOT.LSAME(TRANS,'N') .AND. .NOT.LSAME(TRANS,'T') .AND.
-     +         .NOT.LSAME(TRANS,'C')) THEN
+      ELSE IF (.NOT.is_TN .AND. .NOT.is_TT .AND.
+     +         .NOT.is_TC) THEN
           INFO = 2
-      ELSE IF (.NOT.LSAME(DIAG,'U') .AND. .NOT.LSAME(DIAG,'N')) THEN
+      ELSE IF (.NOT.is_DU .AND. .NOT.is_DN) THEN
           INFO = 3
       ELSE IF (N.LT.0) THEN
           INFO = 4
@@ -253,7 +270,7 @@
 !
       IF (N.EQ.0) RETURN
 !
-      NOUNIT = LSAME(DIAG,'N')
+      NOUNIT = is_DN
 !
 !     Set up the start point in X if the increment is not unity. This
 !     will be  ( N - 1 )*INCX  too small for descending loops.
@@ -267,11 +284,11 @@
 !     Start the operations. In this version the elements of A are
 !     accessed by sequentially with one pass through A.
 !
-      IF (LSAME(TRANS,'N')) THEN
+      IF (is_TN) THEN
 !
 !        Form  x := inv( A )*x.
 !
-          IF (LSAME(UPLO,'U')) THEN
+          IF (is_UU) THEN
               KPLUS1 = K + 1
               IF (INCX.EQ.1) THEN
                   DO 20 J = N,1,-1
@@ -340,7 +357,7 @@
 !
 !        Form  x := inv( A**T)*x.
 !
-          IF (LSAME(UPLO,'U')) THEN
+          IF (is_UU) THEN
               KPLUS1 = K + 1
               IF (INCX.EQ.1) THEN
                   DO 100 J = 1,N

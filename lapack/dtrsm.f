@@ -297,7 +297,7 @@
 !     Start the operations.
 !
       IF (LSIDE) THEN
-          IF (LSAME(TRANSA,'N')) THEN
+          IF (is_AN) THEN
 !
 !           Form  B := alpha*inv( A )*B.
 !
@@ -369,7 +369,7 @@
               END IF
           END IF
       ELSE
-          IF (LSAME(TRANSA,'N')) THEN
+          IF (is_AN) THEN
 !
 !           Form  B := alpha*B*inv( A ).
 !

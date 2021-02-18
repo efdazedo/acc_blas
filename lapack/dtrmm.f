@@ -211,6 +211,8 @@
       DOUBLE PRECISION TEMP
       INTEGER I,INFO,J,K,NROWA
       LOGICAL LSIDE,NOUNIT,UPPER
+      logical :: is_SL,is_SR, is_DU,is_DN, is_UL,is_UU
+      logical :: is_AN,is_AT,is_AC
 !     ..
 !     .. Parameters ..
       DOUBLE PRECISION ONE,ZERO
@@ -219,25 +221,40 @@
 !
 !     Test the input parameters.
 !
-      LSIDE = LSAME(SIDE,'L')
+
+      is_SL = (SIDE.eq.'L').or.(SIDE.eq.'l')
+      is_SR = (SIDE.eq.'R').or.(SIDE.eq.'r')
+
+      is_DU = (DIAG.eq.'U').or.(DIAG.eq.'u')
+      is_DN = (DIAG.eq.'N').or.(DIAG.eq.'n')
+
+      is_UL = (UPLO.eq.'L').or.(UPLO.eq.'l')
+      is_UU = (UPLO.eq.'U').or.(UPLO.eq.'u')
+
+      is_AN = (TRANSA.eq.'N').or.(TRANSA.eq.'n')
+      is_AT = (TRANSA.eq.'T').or.(TRANSA.eq.'t')
+      is_AC = (TRANSA.eq.'C').or.(TRANSA.eq.'c')
+
+
+      LSIDE = is_SL
       IF (LSIDE) THEN
           NROWA = M
       ELSE
           NROWA = N
       END IF
-      NOUNIT = LSAME(DIAG,'N')
-      UPPER = LSAME(UPLO,'U')
+      NOUNIT = is_DN
+      UPPER = is_UU
 !
       INFO = 0
-      IF ((.NOT.LSIDE) .AND. (.NOT.LSAME(SIDE,'R'))) THEN
+      IF ((.NOT.LSIDE) .AND. (.NOT.is_SR)) THEN
           INFO = 1
-      ELSE IF ((.NOT.UPPER) .AND. (.NOT.LSAME(UPLO,'L'))) THEN
+      ELSE IF ((.NOT.UPPER) .AND. (.NOT.is_UL)) THEN
           INFO = 2
-      ELSE IF ((.NOT.LSAME(TRANSA,'N')) .AND.
-     +         (.NOT.LSAME(TRANSA,'T')) .AND.
-     +         (.NOT.LSAME(TRANSA,'C'))) THEN
+      ELSE IF ((.NOT.is_AN) .AND.
+     +         (.NOT.is_AT) .AND.
+     +         (.NOT.is_AC)) THEN
           INFO = 3
-      ELSE IF ((.NOT.LSAME(DIAG,'U')) .AND. (.NOT.LSAME(DIAG,'N'))) THEN
+      ELSE IF ((.NOT.is_DU) .AND. (.NOT.is_DN)) THEN
           INFO = 4
       ELSE IF (M.LT.0) THEN
           INFO = 5
@@ -272,7 +289,7 @@
 !     Start the operations.
 !
       IF (LSIDE) THEN
-          IF (LSAME(TRANSA,'N')) THEN
+          IF (is_AN) THEN
 !
 !           Form  B := alpha*A*B.
 !
@@ -336,7 +353,7 @@
               END IF
           END IF
       ELSE
-          IF (LSAME(TRANSA,'N')) THEN
+          IF (is_AN) THEN
 !
 !           Form  B := alpha*B*A.
 !
