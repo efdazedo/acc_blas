@@ -9,8 +9,8 @@
 
        contains
 #include "lapack/fake_xerbla.f"
-#include "lapack/tolower.f"
-#include "lapack/fake_lsame.f"
+!#include "lapack/tolower.f"
+!#include "lapack/fake_lsame.f"
 
 #include "lapack/dgemm.f"
 !#include "lapack/dgemm_acc.F90"
