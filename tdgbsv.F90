@@ -5,7 +5,7 @@
 
       logical :: isok
       integer :: m,nmat
-      integer :: kl,ku,n,nrhs,ldab,ldb,ldx
+      integer :: kl,ku,n,nrhs,ldab,ldb,ldx,ioffset
       integer :: nrowA,ncolA
       integer :: imat,irhs, inc1,inc2
       real*8 :: errX
@@ -45,7 +45,7 @@
       ioffset = kl+1
       do imat=1,nmat
       do irhs=1,nrhs
-       call dgbmv( trans, nrowA,ncolA,kl,ku,alpha,                       &
+       call dgbmv_cpu( trans, nrowA,ncolA,kl,ku,alpha,                       &
      &            AB(ioffset,1,imat),ldab,                               &
      &            X(:,irhs,imat),inc1,beta,B(:,irhs,imat),inc2)
       enddo
@@ -54,10 +54,15 @@
       
 
       info = 0
+!$acc data copyin(AB) create(ipiv) copy(B,info)
+!$acc kernels
+!$acc loop independent gang 
       do imat=1,nmat
-       call dgbsv(n,kl,ku,nrhs,AB(:,:,imat),ldab,ipiv(:,imat),           &
+       call dgbsv_gpu(n,kl,ku,nrhs,AB(:,:,imat),ldab,ipiv(:,imat),           &
      &            B(:,:,imat),ldb,info(imat))
       enddo
+!$acc end kernels
+!$acc end data
 
       isok = all( info.eq.0)
       if (.not.isok) then

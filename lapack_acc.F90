@@ -35,6 +35,8 @@
 #include "lapack/dgbtrf.f"
 #include "lapack/dgbsv.f"
 
+#include "lapack/dgbmv.f"
+
 
 
 
