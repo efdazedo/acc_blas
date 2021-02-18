@@ -1,6 +1,6 @@
       program tdgbsv
       use lapack_mod, only : dgbsv_cpu => dgbsv, dgbmv_cpu => dgbmv
-      use lapack_acc, only : dgbsv_acc => dgbsv, dgbmv_gpu => dgbmv
+      use lapack_acc, only : dgbsv_gpu => dgbsv, dgbmv_gpu => dgbmv
       implicit none
 
       logical :: isok
