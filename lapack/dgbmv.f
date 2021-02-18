@@ -184,6 +184,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DGBMV(TRANS,M,N,KL,KU,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
+!$acc routine vector
 !
 !  -- Reference BLAS level2 routine (version 3.7.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -191,12 +192,13 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      DOUBLE PRECISION ALPHA,BETA
-      INTEGER INCX,INCY,KL,KU,LDA,M,N
-      CHARACTER TRANS
+      DOUBLE PRECISION, intent(in) ::  ALPHA,BETA
+      INTEGER, intent(in) ::  INCX,INCY,KL,KU,LDA,M,N
+      CHARACTER, intent(in) ::  TRANS
 !     ..
 !     .. Array Arguments ..
-      DOUBLE PRECISION A(LDA,*),X(*),Y(*)
+      DOUBLE PRECISION, intent(in) ::  A(LDA,*),X(*)
+      DOUBLE PRECISION, intent(inout) ::  Y(*)
 !     ..
 !
 !  =====================================================================
@@ -208,6 +210,7 @@
 !     .. Local Scalars ..
       DOUBLE PRECISION TEMP
       INTEGER I,INFO,IX,IY,J,JX,JY,K,KUP1,KX,KY,LENX,LENY
+#if (0)
 !     ..
 !     .. External Functions ..
       LOGICAL LSAME
@@ -215,16 +218,21 @@
 !     ..
 !     .. External Subroutines ..
       EXTERNAL XERBLA
+#endif
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC MAX,MIN
+      logical :: is_N, is_T, is_C
 !     ..
 !
 !     Test the input parameters.
 !
+      is_N = (TRANS.eq.'N').or.(TRANS.eq.'n')
+      is_T = (TRANS.eq.'T').or.(TRANS.eq.'t')
+      is_C = (TRANS.eq.'C').or.(TRANS.eq.'c')
+
       INFO = 0
-      IF (.NOT.LSAME(TRANS,'N') .AND. .NOT.LSAME(TRANS,'T') .AND.
-     +    .NOT.LSAME(TRANS,'C')) THEN
+      IF ((.NOT.is_N) .AND. (.NOT.is_T) .AND. (.NOT.is_C)) THEN
           INFO = 1
       ELSE IF (M.LT.0) THEN
           INFO = 2
@@ -254,7 +262,7 @@
 !     Set  LENX  and  LENY, the lengths of the vectors x and y, and set
 !     up the start points in  X  and  Y.
 !
-      IF (LSAME(TRANS,'N')) THEN
+      IF (is_N) THEN
           LENX = N
           LENY = M
       ELSE
@@ -280,10 +288,12 @@
       IF (BETA.NE.ONE) THEN
           IF (INCY.EQ.1) THEN
               IF (BETA.EQ.ZERO) THEN
+!$acc loop vector
                   DO 10 I = 1,LENY
                       Y(I) = ZERO
    10             CONTINUE
               ELSE
+!$acc loop vector
                   DO 20 I = 1,LENY
                       Y(I) = BETA*Y(I)
    20             CONTINUE
@@ -291,11 +301,13 @@
           ELSE
               IY = KY
               IF (BETA.EQ.ZERO) THEN
+!$acc loop vector private(IY)
                   DO 30 I = 1,LENY
                       Y(IY) = ZERO
                       IY = IY + INCY
    30             CONTINUE
               ELSE
+!$acc loop vector private(IY)
                   DO 40 I = 1,LENY
                       Y(IY) = BETA*Y(IY)
                       IY = IY + INCY
@@ -305,7 +317,7 @@
       END IF
       IF (ALPHA.EQ.ZERO) RETURN
       KUP1 = KU + 1
-      IF (LSAME(TRANS,'N')) THEN
+      IF (is_N) THEN
 !
 !        Form  y := alpha*A*x + y.
 !
@@ -314,6 +326,7 @@
               DO 60 J = 1,N
                   TEMP = ALPHA*X(JX)
                   K = KUP1 - J
+!$acc loop vector 
                   DO 50 I = MAX(1,J-KU),MIN(M,J+KL)
                       Y(I) = Y(I) + TEMP*A(K+I,J)
    50             CONTINUE
@@ -324,6 +337,7 @@
                   TEMP = ALPHA*X(JX)
                   IY = KY
                   K = KUP1 - J
+!$acc loop vector  private(IY)
                   DO 70 I = MAX(1,J-KU),MIN(M,J+KL)
                       Y(IY) = Y(IY) + TEMP*A(K+I,J)
                       IY = IY + INCY
@@ -341,6 +355,7 @@
               DO 100 J = 1,N
                   TEMP = ZERO
                   K = KUP1 - J
+!$acc loop vector reduction(+:TEMP)
                   DO 90 I = MAX(1,J-KU),MIN(M,J+KL)
                       TEMP = TEMP + A(K+I,J)*X(I)
    90             CONTINUE
@@ -352,6 +367,7 @@
                   TEMP = ZERO
                   IX = KX
                   K = KUP1 - J
+!$acc loop vector reduction(+:TEMP) private(IX)
                   DO 110 I = MAX(1,J-KU),MIN(M,J+KL)
                       TEMP = TEMP + A(K+I,J)*X(IX)
                       IX = IX + INCX

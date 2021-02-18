@@ -69,6 +69,7 @@
 !     ..
 !     .. Local Scalars ..
       LOGICAL            NOTRAN
+      logical :: is_N, is_T, is_C
 #if (0)
 !     ..
 !     .. External Functions ..
@@ -87,9 +88,11 @@
 !     Test the input parameters.
 !
       INFO = 0
-      NOTRAN = LSAME( TRANS, 'N' )
-      IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) .AND. .NOT.
-     $    LSAME( TRANS, 'C' ) ) THEN
+      is_N = (TRANS.eq.'N').or.(TRANS.eq.'n')
+      is_T = (TRANS.eq.'T').or.(TRANS.eq.'t')
+      is_C = (TRANS.eq.'C').or.(TRANS.eq.'c')
+      NOTRAN = is_N
+      IF( (.NOT.NOTRAN) .AND. (.NOT.is_T) .AND. (.NOT. is_C) ) THEN
          INFO = -1
       ELSE IF( N.LT.0 ) THEN
          INFO = -2
