@@ -180,6 +180,7 @@
 !     .. Local Scalars ..
       DOUBLE PRECISION TEMP
       INTEGER I,INFO,IX,IY,J,JX,JY,KX,KY,LENX,LENY
+      logical :: is_N, is_T, is_C
 !     ..
 !     .. External Functions ..
 !      LOGICAL LSAME
@@ -194,9 +195,13 @@
 !
 !     Test the input parameters.
 !
+      is_N = (TRANS.eq.'N').or.(TRANS.eq.'n')
+      is_T = (TRANS.eq.'T').or.(TRANS.eq.'t')
+      is_C = (TRANS.eq.'C').or.(TRANS.eq.'c')
+
       INFO = 0
-      IF (.NOT.LSAME(TRANS,'N') .AND. .NOT.LSAME(TRANS,'T') .AND.
-     +    .NOT.LSAME(TRANS,'C')) THEN
+      IF ((.NOT. is_N ) .AND. (.NOT. is_T) .AND.
+     +    (.NOT. is_C) ) THEN
           INFO = 1
       ELSE IF (M.LT.0) THEN
           INFO = 2

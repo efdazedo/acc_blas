@@ -221,6 +221,7 @@
       DOUBLE PRECISION TEMP
       INTEGER I,INFO,J,L,NCOLA,NROWA,NROWB
       LOGICAL NOTA,NOTB
+      logical :: is_AC,is_AT,is_AN, is_BC,is_BT,is_BN
 !     ..
 !     .. Parameters ..
       DOUBLE PRECISION ONE,ZERO
@@ -233,8 +234,17 @@
 !
 !      NOTA = LSAME(TRANSA,'N')
 !      NOTB = LSAME(TRANSB,'N')
-      NOTA = (TRANSA.EQ.'N').OR.(TRANSA.EQ.'n')
-      NOTB = (TRANSB.EQ.'N').OR.(TRANSB.EQ.'n')
+
+      is_AC = (TRANSA.eq.'C').or.(TRANSA.eq.'c')
+      is_AT = (TRANSA.eq.'T').or.(TRANSA.eq.'t')
+      is_AN = (TRANSA.eq.'N').or.(TRANSA.eq.'n')
+
+      is_BC = (TRANSB.eq.'C').or.(TRANSB.eq.'c')
+      is_BT = (TRANSB.eq.'T').or.(TRANSB.eq.'t')
+      is_BN = (TRANSB.eq.'N').or.(TRANSB.eq.'n')
+
+      NOTA = is_AN
+      NOTB = is_BN
       IF (NOTA) THEN
           NROWA = M
           NCOLA = K
@@ -251,11 +261,11 @@
 !     Test the input parameters.
 !
       INFO = 0
-      IF ((.NOT.NOTA) .AND. (.NOT.LSAME(TRANSA,'C')) .AND.
-     +    (.NOT.LSAME(TRANSA,'T'))) THEN
+      IF ((.NOT.NOTA) .AND. (.NOT.is_AC) .AND.
+     +    (.NOT.is_AT)) THEN
           INFO = 1
-      ELSE IF ((.NOT.NOTB) .AND. (.NOT.LSAME(TRANSB,'C')) .AND.
-     +         (.NOT.LSAME(TRANSB,'T'))) THEN
+      ELSE IF ((.NOT.NOTB) .AND. (.NOT.is_BC) .AND.
+     +         (.NOT.is_BT)) THEN
           INFO = 2
       ELSE IF (M.LT.0) THEN
           INFO = 3
