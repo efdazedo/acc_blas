@@ -7,12 +7,14 @@
 !     March 31, 1993
 !
 !     .. Scalar Arguments ..
-      CHARACTER          TRANS
-      INTEGER            INFO, LDA, LDB, N, NRHS
+      CHARACTER, intent(in) ::          TRANS
+      INTEGER, intent(in) ::             LDA, LDB, N, NRHS
+      INTEGER, intent(inout) ::            INFO
 !     ..
 !     .. Array Arguments ..
-      INTEGER            IPIV( * )
-      DOUBLE PRECISION   A( LDA, * ), B( LDB, * )
+      INTEGER, intent(in) ::            IPIV( * )
+      DOUBLE PRECISION, intent(in) ::    A( LDA, * )
+      DOUBLE PRECISION, intent(inout) ::   B( LDB, * )
 !     ..
 !
 !  Purpose

@@ -7,11 +7,12 @@
 !     June 30, 1992
 !
 !     .. Scalar Arguments ..
-      INTEGER            INFO, LDA, M, N
+      INTEGER, intent(in) ::            LDA, M, N
+      INTEGER, intent(inout) ::            INFO
 !     ..
 !     .. Array Arguments ..
-      INTEGER            IPIV( * )
-      DOUBLE PRECISION   A( LDA, * )
+      INTEGER, intent(inout) ::            IPIV( * )
+      DOUBLE PRECISION, intent(inout) ::   A( LDA, * )
 !     ..
 !
 !  Purpose
