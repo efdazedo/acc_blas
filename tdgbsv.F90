@@ -73,6 +73,7 @@
 #endif
       enddo
 !$acc end kernels
+!$acc wait
       call system_clock(tend,count_rate)
 !$acc end data
       ttime = dble(tend-tstart)/dble(count_rate)
