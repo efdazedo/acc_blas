@@ -12,15 +12,28 @@
 !#include "lapack/tolower.f"
 !#include "lapack/fake_lsame.f"
 
-#include "lapack/dgemm.f"
-!#include "lapack/dgemm_acc.F90"
+!#include "lapack/dgemm.f"
+#include "lapack/dgemm_acc.F90"
 
-#include "lapack/idamax.f"
-#include "lapack/dscal.f"
-#include "lapack/dcopy.f"
-#include "lapack/daxpy.f"
-#include "lapack/ddot.f"
-#include "lapack/dswap.f"
+!#include "lapack/idamax.f"
+#include "lapack/idamax_acc.F90"
+
+
+!#include "lapack/dscal.f"
+#include "lapack/dscal_acc.F90"
+
+!#include "lapack/dcopy.f"
+#include "lapack/dcopy_acc.F90"
+
+!#include "lapack/daxpy.f"
+#include "lapack/daxpy_acc.F90"
+
+!#include "lapack/ddot.f"
+#include "lapack/ddot_acc.F90"
+
+!#include "lapack/dswap.f"
+#include "lapack/dswap_acc.F90"
+
 #include "lapack/dger.f"
 #include "lapack/dgemv.f"
 
