@@ -123,6 +123,11 @@
 !
 !  =====================================================================
       SUBROUTINE DLARF( SIDE, M, N, V, INCV, TAU, C, LDC, WORK )
+#ifdef _OPENACC
+!$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK auxiliary routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -147,6 +152,8 @@
 !     .. Local Scalars ..
       LOGICAL            APPLYLEFT
       INTEGER            I, LASTV, LASTC
+      logical :: is_SL
+#if (0)
 !     ..
 !     .. External Subroutines ..
       EXTERNAL           DGEMV, DGER
@@ -155,10 +162,13 @@
       LOGICAL            LSAME
       INTEGER            ILADLR, ILADLC
       EXTERNAL           LSAME, ILADLR, ILADLC
+#endif
 !     ..
 !     .. Executable Statements ..
 !
-      APPLYLEFT = LSAME( SIDE, 'L' )
+!      APPLYLEFT = LSAME( SIDE, 'L' )
+      is_SL = (SIDE.eq.'L').or.(SIDE.eq.'l')
+      APPLYLEFT = is_SL 
       LASTV = 0
       LASTC = 0
       IF( TAU.NE.ZERO ) THEN

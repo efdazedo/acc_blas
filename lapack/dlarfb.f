@@ -194,7 +194,11 @@
 !  =====================================================================
       SUBROUTINE DLARFB( SIDE, TRANS, DIRECT, STOREV, M, N, K, V, LDV,
      $                   T, LDT, C, LDC, WORK, LDWORK )
+#ifdef _OPENACC
 !$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK auxiliary routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -308,7 +312,11 @@
 !
 !              C1 := C1 - W**T
 !
+#ifdef _OPENMP
 !$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 30 J = 1, K
                   DO 20 I = 1, N
                      C( J, I ) = C( J, I ) - WORK( I, J )
@@ -363,7 +371,11 @@
 !
 !              C1 := C1 - W
 !
+#ifdef _OPENMP
 !$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 60 J = 1, K
                   DO 50 I = 1, M
                      C( I, J ) = C( I, J ) - WORK( I, J )
@@ -424,7 +436,11 @@
 !
 !              C2 := C2 - W**T
 !
+#ifdef _OPENMP
 !$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 90 J = 1, K
                   DO 80 I = 1, N
                      C( M-K+J, I ) = C( M-K+J, I ) - WORK( I, J )
@@ -477,7 +493,11 @@
 !
 !              C2 := C2 - W
 !
+#ifdef _OPENMP
 !$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 120 J = 1, K
                   DO 110 I = 1, M
                      C( I, N-K+J ) = C( I, N-K+J ) - WORK( I, J )
@@ -542,7 +562,11 @@
 !
 !              C1 := C1 - W**T
 !
+#ifdef _OPENMP
 !$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 150 J = 1, K
                   DO 140 I = 1, N
                      C( J, I ) = C( J, I ) - WORK( I, J )
@@ -597,7 +621,11 @@
 !
 !              C1 := C1 - W
 !
+#ifdef _OPENMP
 !$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 180 J = 1, K
                   DO 170 I = 1, M
                      C( I, J ) = C( I, J ) - WORK( I, J )
@@ -658,7 +686,11 @@
 !
 !              C2 := C2 - W**T
 !
+#ifdef _OPENMP
 !$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 210 J = 1, K
                   DO 200 I = 1, N
                      C( M-K+J, I ) = C( M-K+J, I ) - WORK( I, J )
@@ -711,7 +743,11 @@
 !
 !              C1 := C1 - W
 !
+#ifdef _OPENMP
 !$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 240 J = 1, K
                   DO 230 I = 1, M
                      C( I, N-K+J ) = C( I, N-K+J ) - WORK( I, J )

@@ -77,6 +77,11 @@
 !
 !  =====================================================================
       INTEGER FUNCTION ILADLC( M, N, A, LDA )
+#ifdef _OPENACC
+!$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK auxiliary routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --

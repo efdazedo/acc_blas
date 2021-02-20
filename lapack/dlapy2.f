@@ -62,6 +62,11 @@
 !
 !  =====================================================================
       DOUBLE PRECISION FUNCTION DLAPY2( X, Y )
+#ifdef _OPENACC
+!$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK auxiliary routine (version 3.7.1) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -83,10 +88,12 @@
 !     .. Local Scalars ..
       DOUBLE PRECISION   W, XABS, YABS, Z
       LOGICAL            X_IS_NAN, Y_IS_NAN
+#if (0)
 !     ..
 !     .. External Functions ..
       LOGICAL            DISNAN
       EXTERNAL           DISNAN
+#endif
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, MIN, SQRT
