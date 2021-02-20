@@ -41,8 +41,7 @@
       integer m,n,lda,lwork,info
       real*8 A(lda,*), tau(*)
       real*8 work(*)
-      end subroutein dgeqrf
-      end interface
+      end subroutine dgeqrf
 
       subroutine dgeqrs(m,n,nrhs,A,lda,tau,B,ldb,work,lwork,info)
       implicit none
@@ -50,5 +49,6 @@
       real*8 A(lda,*), tau(*), B(ldb,*), work(*)
       end subroutine dgeqrs
 
+      end interface
 
       end module lapack_mod
