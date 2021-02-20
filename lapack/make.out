@@ -1,1 +1,2 @@
-sh: 0: Can't open test2.sh
+NVFORTRAN-F-0002-Unable to open source input file: lapack_acc.F90
+NVFORTRAN/x86-64 Linux 21.1-0: compilation aborted
