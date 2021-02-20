@@ -135,6 +135,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DGEQRF( M, N, A, LDA, TAU, WORK, LWORK, INFO )
+!$acc routine vector
 !
 !  -- LAPACK computational routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -154,9 +155,11 @@
       LOGICAL            LQUERY
       INTEGER            I, IB, IINFO, IWS, K, LDWORK, LWKOPT, NB,
      $                   NBMIN, NX
+#if (0)
 !     ..
 !     .. External Subroutines ..
       EXTERNAL           DGEQR2, DLARFB, DLARFT, XERBLA
+#endif
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN

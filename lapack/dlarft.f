@@ -162,6 +162,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DLARFT( DIRECT, STOREV, N, K, V, LDV, TAU, T, LDT )
+!$acc routine vector
 !
 !  -- LAPACK auxiliary routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -184,6 +185,7 @@
 !     ..
 !     .. Local Scalars ..
       INTEGER            I, J, PREVLASTV, LASTV
+#if (0)  
 !     ..
 !     .. External Subroutines ..
       EXTERNAL           DGEMV, DTRMV
@@ -191,6 +193,7 @@
 !     .. External Functions ..
       LOGICAL            LSAME
       EXTERNAL           LSAME
+#endif
 !     ..
 !     .. Executable Statements ..
 !
@@ -207,6 +210,7 @@
 !
 !              H(i)  =  I
 !
+!$acc loop vector
                DO J = 1, I
                   T( J, I ) = ZERO
                END DO
@@ -219,6 +223,7 @@
                   DO LASTV = N, I+1, -1
                      IF( V( LASTV, I ).NE.ZERO ) EXIT
                   END DO
+!$acc loop vector
                   DO J = 1, I-1
                      T( J, I ) = -TAU( I ) * V( I , J )
                   END DO
@@ -234,6 +239,7 @@
                   DO LASTV = N, I+1, -1
                      IF( V( I, LASTV ).NE.ZERO ) EXIT
                   END DO
+!$acc loop vector
                   DO J = 1, I-1
                      T( J, I ) = -TAU( I ) * V( J , I )
                   END DO
@@ -265,6 +271,7 @@
 !
 !              H(i)  =  I
 !
+!$acc loop vector
                DO J = I, K
                   T( J, I ) = ZERO
                END DO
@@ -278,6 +285,7 @@
                      DO LASTV = 1, I-1
                         IF( V( LASTV, I ).NE.ZERO ) EXIT
                      END DO
+!$acc loop vector
                      DO J = I+1, K
                         T( J, I ) = -TAU( I ) * V( N-K+I , J )
                      END DO
@@ -293,6 +301,7 @@
                      DO LASTV = 1, I-1
                         IF( V( I, LASTV ).NE.ZERO ) EXIT
                      END DO
+!$acc loop vector
                      DO J = I+1, K
                         T( J, I ) = -TAU( I ) * V( J, N-K+I )
                      END DO

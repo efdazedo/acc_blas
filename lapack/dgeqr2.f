@@ -120,6 +120,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DGEQR2( M, N, A, LDA, TAU, WORK, INFO )
+!$acc routine vector
 !
 !  -- LAPACK computational routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -142,9 +143,11 @@
 !     .. Local Scalars ..
       INTEGER            I, K
       DOUBLE PRECISION   AII
+#if (0)
 !     ..
 !     .. External Subroutines ..
       EXTERNAL           DLARF, DLARFG, XERBLA
+#endif
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
