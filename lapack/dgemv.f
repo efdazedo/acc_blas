@@ -155,7 +155,11 @@
 !>
 !  =====================================================================
       SUBROUTINE DGEMV(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
+#ifdef _OPENACC
 !$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- Reference BLAS level2 routine (version 3.7.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -254,12 +258,20 @@
       IF (BETA.NE.ONE) THEN
           IF (INCY.EQ.1) THEN
               IF (BETA.EQ.ZERO) THEN
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                   DO 10 I = 1,LENY
                       Y(I) = ZERO
    10             CONTINUE
               ELSE
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                   DO 20 I = 1,LENY
                       Y(I) = BETA*Y(I)
    20             CONTINUE
@@ -267,13 +279,21 @@
           ELSE
               IY = KY
               IF (BETA.EQ.ZERO) THEN
+#ifdef _OPENACC
 !$acc loop vector private(IY)
+#else
+!$omp parallel do simd private(IY)
+#endif
                   DO 30 I = 1,LENY
                       Y(IY) = ZERO
                       IY = IY + INCY
    30             CONTINUE
               ELSE
+#ifdef _OPENACC
 !$acc loop vector private(IY)
+#else
+!$omp parallel do simd private(IY)
+#endif
                   DO 40 I = 1,LENY
                       Y(IY) = BETA*Y(IY)
                       IY = IY + INCY
@@ -290,7 +310,11 @@
           IF (INCY.EQ.1) THEN
               DO 60 J = 1,N
                   TEMP = ALPHA*X(JX)
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                   DO 50 I = 1,M
                       Y(I) = Y(I) + TEMP*A(I,J)
    50             CONTINUE
@@ -300,7 +324,11 @@
               DO 80 J = 1,N
                   TEMP = ALPHA*X(JX)
                   IY = KY
+#ifdef _OPENACC
 !$acc loop vector private(IY)
+#else
+!$omp parallel do simd private(IY)
+#endif
                   DO 70 I = 1,M
                       Y(IY) = Y(IY) + TEMP*A(I,J)
                       IY = IY + INCY
@@ -316,7 +344,11 @@
           IF (INCX.EQ.1) THEN
               DO 100 J = 1,N
                   TEMP = ZERO
+#ifdef _OPENACC
 !$acc loop vector reduction(+:TEMP)
+#else
+!$omp parallel do simd reduction(+:TEMP)
+#endif
                   DO 90 I = 1,M
                       TEMP = TEMP + A(I,J)*X(I)
    90             CONTINUE
@@ -327,7 +359,11 @@
               DO 120 J = 1,N
                   TEMP = ZERO
                   IX = KX
+#ifdef _OPENACC
 !$acc loop vector reduction(+:TEMP) private(IX)
+#else
+!$omp parallel do simd reduction(+:TEMP) private(IX)
+#endif
                   DO 110 I = 1,M
                       TEMP = TEMP + A(I,J)*X(IX)
                       IX = IX + INCX

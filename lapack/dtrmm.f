@@ -176,7 +176,11 @@
 !>
 !  =====================================================================
       SUBROUTINE DTRMM(SIDE,UPLO,TRANSA,DIAG,M,N,ALPHA,A,LDA,B,LDB)
+#ifdef _OPENACC
 !$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- Reference BLAS level3 routine (version 3.7.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -277,7 +281,11 @@
 !     And when  alpha.eq.zero.
 !
       IF (ALPHA.EQ.ZERO) THEN
+#ifdef _OPENACC
 !$acc loop vector collapse(2) 
+#else
+!$omp parallel do simd collapse(2) 
+#endif
           DO 20 J = 1,N
               DO 10 I = 1,M
                   B(I,J) = ZERO
@@ -298,7 +306,11 @@
                       DO 40 K = 1,M
                           IF (B(K,J).NE.ZERO) THEN
                               TEMP = ALPHA*B(K,J)
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                               DO 30 I = 1,K - 1
                                   B(I,J) = B(I,J) + TEMP*A(I,K)
    30                         CONTINUE
@@ -314,7 +326,11 @@
                               TEMP = ALPHA*B(K,J)
                               B(K,J) = TEMP
                               IF (NOUNIT) B(K,J) = B(K,J)*A(K,K)
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                               DO 60 I = K + 1,M
                                   B(I,J) = B(I,J) + TEMP*A(I,K)
    60                         CONTINUE
@@ -331,7 +347,11 @@
                       DO 100 I = M,1,-1
                           TEMP = B(I,J)
                           IF (NOUNIT) TEMP = TEMP*A(I,I)
+#ifdef _OPENACC
 !$acc loop vector reduction(+:TEMP)
+#else
+!$omp parallel do simd reduction(+:TEMP)
+#endif
                           DO 90 K = 1,I - 1
                               TEMP = TEMP + A(K,I)*B(K,J)
    90                     CONTINUE
@@ -343,7 +363,11 @@
                       DO 130 I = 1,M
                           TEMP = B(I,J)
                           IF (NOUNIT) TEMP = TEMP*A(I,I)
+#ifdef _OPENACC
 !$acc loop vector reduction(+:TEMP)
+#else
+!$omp parallel do simd reduction(+:TEMP)
+#endif
                           DO 120 K = I + 1,M
                               TEMP = TEMP + A(K,I)*B(K,J)
   120                     CONTINUE
@@ -361,14 +385,22 @@
                   DO 180 J = N,1,-1
                       TEMP = ALPHA
                       IF (NOUNIT) TEMP = TEMP*A(J,J)
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                       DO 150 I = 1,M
                           B(I,J) = TEMP*B(I,J)
   150                 CONTINUE
                       DO 170 K = 1,J - 1
                           IF (A(K,J).NE.ZERO) THEN
                               TEMP = ALPHA*A(K,J)
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                               DO 160 I = 1,M
                                   B(I,J) = B(I,J) + TEMP*B(I,K)
   160                         CONTINUE
@@ -379,14 +411,22 @@
                   DO 220 J = 1,N
                       TEMP = ALPHA
                       IF (NOUNIT) TEMP = TEMP*A(J,J)
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                       DO 190 I = 1,M
                           B(I,J) = TEMP*B(I,J)
   190                 CONTINUE
                       DO 210 K = J + 1,N
                           IF (A(K,J).NE.ZERO) THEN
                               TEMP = ALPHA*A(K,J)
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                               DO 200 I = 1,M
                                   B(I,J) = B(I,J) + TEMP*B(I,K)
   200                         CONTINUE
@@ -403,7 +443,11 @@
                       DO 240 J = 1,K - 1
                           IF (A(J,K).NE.ZERO) THEN
                               TEMP = ALPHA*A(J,K)
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                               DO 230 I = 1,M
                                   B(I,J) = B(I,J) + TEMP*B(I,K)
   230                         CONTINUE
@@ -412,7 +456,11 @@
                       TEMP = ALPHA
                       IF (NOUNIT) TEMP = TEMP*A(K,K)
                       IF (TEMP.NE.ONE) THEN
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                           DO 250 I = 1,M
                               B(I,K) = TEMP*B(I,K)
   250                     CONTINUE
@@ -423,7 +471,11 @@
                       DO 280 J = K + 1,N
                           IF (A(J,K).NE.ZERO) THEN
                               TEMP = ALPHA*A(J,K)
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                               DO 270 I = 1,M
                                   B(I,J) = B(I,J) + TEMP*B(I,K)
   270                         CONTINUE
@@ -432,7 +484,11 @@
                       TEMP = ALPHA
                       IF (NOUNIT) TEMP = TEMP*A(K,K)
                       IF (TEMP.NE.ONE) THEN
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                           DO 290 I = 1,M
                               B(I,K) = TEMP*B(I,K)
   290                     CONTINUE

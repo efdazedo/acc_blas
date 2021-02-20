@@ -1,5 +1,9 @@
       SUBROUTINE DGER  ( M, N, ALPHA, X, INCX, Y, INCY, A, LDA )
+#ifdef _OPENACC
 !$acc routine vector
+#else
+!$omp declare target
+#endif
 !     .. Scalar Arguments ..
       DOUBLE PRECISION,intent(in) ::    ALPHA
       INTEGER, intent(in) ::            INCX, INCY, LDA, M, N
@@ -128,7 +132,11 @@
       END IF
       JY0 = JY
       IF( INCX.EQ.1 )THEN
+#ifdef _OPENACC
 !$acc    loop  vector collapse(2) private(JY,TEMP)
+#else
+!$omp parallel do simd collapse(2) private(JY,TEMP)
+#endif
          DO J = 1, N
          DO I = 1, M
             JY = JY0 + (J-1)*INCY
@@ -143,7 +151,11 @@
             KX = 1 - ( M - 1 )*INCX
          END IF
          IX0  = KX
+#ifdef _OPENACC
 !$acc loop vector collapse(2) private(JY,TEMP,IX)
+#else
+!$omp parallel do simd collapse(2) private(JY,TEMP,IX)
+#endif
          DO J = 1, N
          DO I = 1, M
             JY = JY0 + (J-1)*INCY

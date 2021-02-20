@@ -144,7 +144,11 @@
 !>
 !  =====================================================================
       SUBROUTINE DGBTF2( M, N, KL, KU, AB, LDAB, IPIV, INFO )
+#ifdef _OPENACC
 !$acc routine vector 
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK computational routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -216,7 +220,11 @@
 !     Set fill-in elements in columns KU+2 to KV to zero.
 !
       DO 20 J = KU + 2, MIN( KV, N )
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
          DO 10 I = KV - J + 2, KL
             AB( I, J ) = ZERO
    10    CONTINUE
@@ -232,7 +240,11 @@
 !        Set fill-in elements in column J+KV to zero.
 !
          IF( J+KV.LE.N ) THEN
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
             DO 30 I = 1, KL
                AB( I, J+KV ) = ZERO
    30       CONTINUE

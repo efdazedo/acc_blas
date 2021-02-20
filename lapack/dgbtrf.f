@@ -143,7 +143,11 @@
 !>
 !  =====================================================================
       SUBROUTINE DGBTRF( M, N, KL, KU, AB, LDAB, IPIV, INFO )
+#ifdef _OPENACC
 !$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK computational routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -238,7 +242,11 @@
 !        Zero the superdiagonal elements of the work array WORK13
 !
          DO 20 J = 1, NB
+#ifdef _OPENACC
 !$acc loop vector 
+#else
+!$omp parallel do simd
+#endif
             DO 10 I = 1, J - 1
                WORK13( I, J ) = ZERO
    10       CONTINUE
@@ -247,7 +255,11 @@
 !        Zero the subdiagonal elements of the work array WORK31
 !
          DO 40 J = 1, NB
+#ifdef _OPENACC
 !$acc loop vector 
+#else
+!$omp parallel do simd
+#endif
             DO 30 I = J + 1, NB
                WORK31( I, J ) = ZERO
    30       CONTINUE
@@ -258,7 +270,11 @@
 !        Set fill-in elements in columns KU+2 to KV to zero
 !
          DO 60 J = KU + 2, MIN( KV, N )
+#ifdef _OPENACC
 !$acc loop vector 
+#else
+!$omp parallel do simd
+#endif
             DO 50 I = KV - J + 2, KL
                AB( I, J ) = ZERO
    50       CONTINUE
@@ -296,7 +312,11 @@
 !              Set fill-in elements in column JJ+KV to zero
 !
                IF( JJ+KV.LE.N ) THEN
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                   DO 70 I = 1, KL
                      AB( I, JJ+KV ) = ZERO
    70             CONTINUE
@@ -375,7 +395,11 @@
 !
 !              Adjust the pivot indices.
 !
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                DO 90 I = J, J + JB - 1
                   IPIV( I ) = IPIV( I ) + J - 1
    90          CONTINUE
@@ -384,7 +408,11 @@
 !              columnwise.
 !
                K2 = J - 1 + JB + J2
+#ifdef _OPENACC
 !$acc loop vector private(JJ,II,IP,TEMP)
+#else
+!$omp parallel do simd private(JJ,II,IP,TEMP)
+#endif
                DO 110 I = 1, J3
                   JJ = K2 + I
                   DO 100 II = J + I - 1, J + JB - 1
@@ -434,7 +462,11 @@
 !                 WORK13
 !
                   DO 130 JJ = 1, J3
+#ifdef _OPENACC
 !$acc loop vector 
+#else
+!$omp parallel do simd
+#endif
                      DO 120 II = JJ, JB
                         WORK13( II, JJ ) = AB( II-JJ+1, JJ+J+KV-1 )
   120                CONTINUE
@@ -468,7 +500,11 @@
 !                 Copy the lower triangle of A13 back into place
 !
                   DO 150 JJ = 1, J3
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                      DO 140 II = JJ, JB
                         AB( II-JJ+1, JJ+J+KV-1 ) = WORK13( II, JJ )
   140                CONTINUE
@@ -478,7 +514,11 @@
 !
 !              Adjust the pivot indices.
 !
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                DO 160 I = J, J + JB - 1
                   IPIV( I ) = IPIV( I ) + J - 1
   160          CONTINUE
