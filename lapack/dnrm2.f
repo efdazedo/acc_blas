@@ -73,6 +73,7 @@
 !>
 !  =====================================================================
       DOUBLE PRECISION FUNCTION DNRM2(N,X,INCX)
+!$acc routine vector
 !
 !  -- Reference BLAS level1 routine (version 3.8.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --

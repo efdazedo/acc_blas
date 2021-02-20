@@ -58,6 +58,11 @@
 !
 !  =====================================================================
       LOGICAL FUNCTION DISNAN( DIN )
+#ifdef _OPENACC
+!$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK auxiliary routine (version 3.7.1) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -70,9 +75,11 @@
 !
 !  =====================================================================
 !
+#if (0)
 !  .. External Functions ..
       LOGICAL DLAISNAN
       EXTERNAL DLAISNAN
+#endif
 !  ..
 !  .. Executable Statements ..
       DISNAN = DLAISNAN(DIN,DIN)

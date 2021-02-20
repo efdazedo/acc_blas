@@ -162,6 +162,11 @@
 !>
 !  =====================================================================
       SUBROUTINE DLARFT( DIRECT, STOREV, N, K, V, LDV, TAU, T, LDT )
+#ifdef _OPENACC
+!$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK auxiliary routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -169,11 +174,12 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      CHARACTER          DIRECT, STOREV
-      INTEGER            K, LDT, LDV, N
+      CHARACTER,intent(in)::          DIRECT, STOREV
+      INTEGER,intent(in)::            K, LDT, LDV, N
 !     ..
 !     .. Array Arguments ..
-      DOUBLE PRECISION   T( LDT, * ), TAU( * ), V( LDV, * )
+      DOUBLE PRECISION,intent(inout)::   T( LDT, * )
+      DOUBLE PRECISION,intent(inout)::   TAU( * ), V( LDV, * )
 !     ..
 !
 !  =====================================================================
@@ -184,6 +190,8 @@
 !     ..
 !     .. Local Scalars ..
       INTEGER            I, J, PREVLASTV, LASTV
+      logical :: is_DF, is_STC
+#if (0)  
 !     ..
 !     .. External Subroutines ..
       EXTERNAL           DGEMV, DTRMV
@@ -191,15 +199,18 @@
 !     .. External Functions ..
       LOGICAL            LSAME
       EXTERNAL           LSAME
+#endif
 !     ..
 !     .. Executable Statements ..
 !
 !     Quick return if possible
 !
+      is_DF = (DIRECT.eq.'F').or.(DIRECT.eq.'f')
+      is_STC = (STOREV.eq.'C').or.(STOREV.eq.'c')
       IF( N.EQ.0 )
      $   RETURN
 !
-      IF( LSAME( DIRECT, 'F' ) ) THEN
+      IF( is_DF ) THEN
          PREVLASTV = N
          DO I = 1, K
             PREVLASTV = MAX( I, PREVLASTV )
@@ -207,6 +218,11 @@
 !
 !              H(i)  =  I
 !
+#ifdef _OPENMP
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                DO J = 1, I
                   T( J, I ) = ZERO
                END DO
@@ -214,11 +230,16 @@
 !
 !              general case
 !
-               IF( LSAME( STOREV, 'C' ) ) THEN
+               IF( is_STC ) THEN
 !                 Skip any trailing zeros.
                   DO LASTV = N, I+1, -1
                      IF( V( LASTV, I ).NE.ZERO ) EXIT
                   END DO
+#ifdef _OPENMP
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                   DO J = 1, I-1
                      T( J, I ) = -TAU( I ) * V( I , J )
                   END DO
@@ -234,6 +255,11 @@
                   DO LASTV = N, I+1, -1
                      IF( V( I, LASTV ).NE.ZERO ) EXIT
                   END DO
+#ifdef _OPENMP
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                   DO J = 1, I-1
                      T( J, I ) = -TAU( I ) * V( J , I )
                   END DO
@@ -265,6 +291,11 @@
 !
 !              H(i)  =  I
 !
+#ifdef _OPENMP
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                DO J = I, K
                   T( J, I ) = ZERO
                END DO
@@ -273,11 +304,16 @@
 !              general case
 !
                IF( I.LT.K ) THEN
-                  IF( LSAME( STOREV, 'C' ) ) THEN
+                  IF( is_STC ) THEN
 !                    Skip any leading zeros.
                      DO LASTV = 1, I-1
                         IF( V( LASTV, I ).NE.ZERO ) EXIT
                      END DO
+#ifdef _OPENMP
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                      DO J = I+1, K
                         T( J, I ) = -TAU( I ) * V( N-K+I , J )
                      END DO
@@ -293,6 +329,11 @@
                      DO LASTV = 1, I-1
                         IF( V( I, LASTV ).NE.ZERO ) EXIT
                      END DO
+#ifdef _OPENMP
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                      DO J = I+1, K
                         T( J, I ) = -TAU( I ) * V( J, N-K+I )
                      END DO

@@ -77,6 +77,11 @@
 !
 !  =====================================================================
       INTEGER FUNCTION ILADLR( M, N, A, LDA )
+#ifdef _OPENACC
+!$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK auxiliary routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -84,10 +89,10 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      INTEGER            M, N, LDA
+      INTEGER, intent(in) ::             M, N, LDA
 !     ..
 !     .. Array Arguments ..
-      DOUBLE PRECISION   A( LDA, * )
+      DOUBLE PRECISION, intent(in) ::   A( LDA, * )
 !     ..
 !
 !  =====================================================================
@@ -109,6 +114,11 @@
       ELSE
 !     Scan up each column tracking the last zero row seen.
          ILADLR = 0
+#ifdef _OPENMP
+!$acc loop vector private(I) reduction(max:ILADLR)
+#else
+!$omp parallel do simd private(I) reduction(max:ILADLR)
+#endif
          DO J = 1, N
             I=M
             DO WHILE((A(MAX(I,1),J).EQ.ZERO).AND.(I.GE.1))

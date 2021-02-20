@@ -105,6 +105,11 @@
 !
 !  =====================================================================
       SUBROUTINE DLARFG( N, ALPHA, X, INCX, TAU )
+#ifdef _OPENACC
+!$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK auxiliary routine (version 3.8.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -112,11 +117,12 @@
 !     November 2017
 !
 !     .. Scalar Arguments ..
-      INTEGER            INCX, N
-      DOUBLE PRECISION   ALPHA, TAU
+      INTEGER,intent(in) ::            INCX, N
+      DOUBLE PRECISION, intent(inout) ::   ALPHA
+      DOUBLE PRECISION, intent(inout) ::   TAU
 !     ..
 !     .. Array Arguments ..
-      DOUBLE PRECISION   X( * )
+      DOUBLE PRECISION, intent(inout) ::   X( * )
 !     ..
 !
 !  =====================================================================
@@ -129,15 +135,17 @@
       INTEGER            J, KNT
       DOUBLE PRECISION   BETA, RSAFMN, SAFMIN, XNORM
 !     ..
+!     .. Intrinsic Functions ..
+      INTRINSIC          ABS, SIGN
+#if (0)
+!     ..
 !     .. External Functions ..
       DOUBLE PRECISION   DLAMCH, DLAPY2, DNRM2
       EXTERNAL           DLAMCH, DLAPY2, DNRM2
 !     ..
-!     .. Intrinsic Functions ..
-      INTRINSIC          ABS, SIGN
-!     ..
 !     .. External Subroutines ..
       EXTERNAL           DSCAL
+#endif
 !     ..
 !     .. Executable Statements ..
 !

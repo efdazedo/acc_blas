@@ -77,6 +77,11 @@
 !
 !  =====================================================================
       INTEGER FUNCTION ILADLC( M, N, A, LDA )
+#ifdef _OPENACC
+!$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK auxiliary routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -84,10 +89,10 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      INTEGER            M, N, LDA
+      INTEGER,intent(in) ::            M, N, LDA
 !     ..
 !     .. Array Arguments ..
-      DOUBLE PRECISION   A( LDA, * )
+      DOUBLE PRECISION, intent(in) ::   A( LDA, * )
 !     ..
 !
 !  =====================================================================

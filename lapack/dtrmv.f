@@ -146,6 +146,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DTRMV(UPLO,TRANS,DIAG,N,A,LDA,X,INCX)
+!$acc routine vector
 !
 !  -- Reference BLAS level2 routine (version 3.7.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -170,6 +171,10 @@
       DOUBLE PRECISION TEMP
       INTEGER I,INFO,IX,J,JX,KX
       LOGICAL NOUNIT
+      logical :: is_UU, is_UL
+      logical :: is_TN, is_TC, is_TT
+      logical :: is_DU, is_DN
+#if (0)
 !     ..
 !     .. External Functions ..
       LOGICAL LSAME
@@ -177,6 +182,7 @@
 !     ..
 !     .. External Subroutines ..
       EXTERNAL XERBLA
+#endif
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC MAX
@@ -185,12 +191,22 @@
 !     Test the input parameters.
 !
       INFO = 0
-      IF (.NOT.LSAME(UPLO,'U') .AND. .NOT.LSAME(UPLO,'L')) THEN
+      is_UU = (UPLO.eq.'U').or.(UPLO.eq.'u')
+      is_UL = (UPLO.eq.'L').or.(UPLO.eq.'l')
+
+      is_TN = (TRANS.eq.'N').or.(TRANS.eq.'n')
+      is_TC = (TRANS.eq.'C').or.(TRANS.eq.'c')
+      is_TT = (TRANS.eq.'T').or.(TRANS.eq.'t')
+
+      is_DU = (DIAG.eq.'U').or.(DIAG.eq.'u')
+      is_DN = (DIAG.eq.'N').or.(DIAG.eq.'n')
+
+      IF (.NOT.is_UU .AND. .NOT.is_UL) THEN
           INFO = 1
-      ELSE IF (.NOT.LSAME(TRANS,'N') .AND. .NOT.LSAME(TRANS,'T') .AND.
-     +         .NOT.LSAME(TRANS,'C')) THEN
+      ELSE IF (.NOT.is_TN .AND. .NOT.is_TT .AND.
+     +         .NOT.is_TC) THEN
           INFO = 2
-      ELSE IF (.NOT.LSAME(DIAG,'U') .AND. .NOT.LSAME(DIAG,'N')) THEN
+      ELSE IF (.NOT.is_DU .AND. .NOT.is_DN) THEN
           INFO = 3
       ELSE IF (N.LT.0) THEN
           INFO = 4
@@ -208,7 +224,7 @@
 !
       IF (N.EQ.0) RETURN
 !
-      NOUNIT = LSAME(DIAG,'N')
+      NOUNIT = is_DN
 !
 !     Set up the start point in X if the increment is not unity. This
 !     will be  ( N - 1 )*INCX  too small for descending loops.
@@ -222,15 +238,16 @@
 !     Start the operations. In this version the elements of A are
 !     accessed sequentially with one pass through A.
 !
-      IF (LSAME(TRANS,'N')) THEN
+      IF (is_TN) THEN
 !
 !        Form  x := A*x.
 !
-          IF (LSAME(UPLO,'U')) THEN
+          IF (is_UU) THEN
               IF (INCX.EQ.1) THEN
                   DO 20 J = 1,N
                       IF (X(J).NE.ZERO) THEN
                           TEMP = X(J)
+!$acc loop vector 
                           DO 10 I = 1,J - 1
                               X(I) = X(I) + TEMP*A(I,J)
    10                     CONTINUE
@@ -243,6 +260,7 @@
                       IF (X(JX).NE.ZERO) THEN
                           TEMP = X(JX)
                           IX = KX
+!$acc loop vector private(IX)
                           DO 30 I = 1,J - 1
                               X(IX) = X(IX) + TEMP*A(I,J)
                               IX = IX + INCX
@@ -257,6 +275,7 @@
                   DO 60 J = N,1,-1
                       IF (X(J).NE.ZERO) THEN
                           TEMP = X(J)
+!$acc loop vector
                           DO 50 I = N,J + 1,-1
                               X(I) = X(I) + TEMP*A(I,J)
    50                     CONTINUE
@@ -270,6 +289,7 @@
                       IF (X(JX).NE.ZERO) THEN
                           TEMP = X(JX)
                           IX = KX
+!$acc loop vector private(IX)
                           DO 70 I = N,J + 1,-1
                               X(IX) = X(IX) + TEMP*A(I,J)
                               IX = IX - INCX
@@ -284,11 +304,12 @@
 !
 !        Form  x := A**T*x.
 !
-          IF (LSAME(UPLO,'U')) THEN
+          IF (is_UU) THEN
               IF (INCX.EQ.1) THEN
                   DO 100 J = N,1,-1
                       TEMP = X(J)
                       IF (NOUNIT) TEMP = TEMP*A(J,J)
+!$acc loop vector reduction(+:TEMP)
                       DO 90 I = J - 1,1,-1
                           TEMP = TEMP + A(I,J)*X(I)
    90                 CONTINUE
@@ -300,6 +321,7 @@
                       TEMP = X(JX)
                       IX = JX
                       IF (NOUNIT) TEMP = TEMP*A(J,J)
+!$acc loop vector reduction(+:TEMP) private(IX)
                       DO 110 I = J - 1,1,-1
                           IX = IX - INCX
                           TEMP = TEMP + A(I,J)*X(IX)
@@ -313,6 +335,7 @@
                   DO 140 J = 1,N
                       TEMP = X(J)
                       IF (NOUNIT) TEMP = TEMP*A(J,J)
+!$acc loop vector reduction(+:TEMP)
                       DO 130 I = J + 1,N
                           TEMP = TEMP + A(I,J)*X(I)
   130                 CONTINUE
@@ -324,6 +347,7 @@
                       TEMP = X(JX)
                       IX = JX
                       IF (NOUNIT) TEMP = TEMP*A(J,J)
+!$acc loop vector reduction(+:TEMP) private(IX)
                       DO 150 I = J + 1,N
                           IX = IX + INCX
                           TEMP = TEMP + A(I,J)*X(IX)

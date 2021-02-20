@@ -34,10 +34,17 @@
 !#include "lapack/dswap.f"
 #include "lapack/dswap_acc.F90"
 
+!#include "lapack/dnrm2.f"
+#include "lapack/dnrm2_acc.F90"
+
+
+
 #include "lapack/dger.f"
 #include "lapack/dgemv.f"
 #include "lapack/dtrsm.f"
 #include "lapack/dtrmm.f"
+
+#include "lapack/dtrmv.f"
 
 #include "lapack/dlaswp.f"
 #include "lapack/dgbtf2.f"
@@ -52,5 +59,21 @@
 #include "lapack/dgetf2.f"
 #include "lapack/dgetrs.f"
 #include "lapack/dgetrf.f"
+
+#include "lapack/dlamch.f"
+#include "lapack/dlaisnan.f"
+#include "lapack/disnan.f"
+#include "lapack/dlapy2.f"
+
+#include "lapack/iladlc.f"
+#include "lapack/iladlr.f"
+#include "lapack/dlarf.f"
+
+#include "lapack/dlarfg.f"
+#include "lapack/dlarfb.f"
+#include "lapack/dlarft.f"
+
+#include "lapack/dgeqr2.f"
+#include "lapack/dgeqrf.f"
 
        end module lapack_acc

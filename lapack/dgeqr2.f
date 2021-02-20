@@ -120,6 +120,11 @@
 !>
 !  =====================================================================
       SUBROUTINE DGEQR2( M, N, A, LDA, TAU, WORK, INFO )
+#ifdef _OPENACC
+!$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK computational routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -127,10 +132,13 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      INTEGER            INFO, LDA, M, N
+      INTEGER,intent(in) ::            LDA, M, N
+      INTEGER,intent(inout) ::            INFO
 !     ..
 !     .. Array Arguments ..
-      DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
+      DOUBLE PRECISION, intent(inout) :: A( LDA, * )
+      DOUBLE PRECISION, intent(inout) :: TAU( * )
+      DOUBLE PRECISION, intent(inout) :: WORK( * )
 !     ..
 !
 !  =====================================================================
@@ -142,9 +150,11 @@
 !     .. Local Scalars ..
       INTEGER            I, K
       DOUBLE PRECISION   AII
+#if (0)
 !     ..
 !     .. External Subroutines ..
       EXTERNAL           DLARF, DLARFG, XERBLA
+#endif
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN

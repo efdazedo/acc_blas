@@ -194,6 +194,11 @@
 !  =====================================================================
       SUBROUTINE DLARFB( SIDE, TRANS, DIRECT, STOREV, M, N, K, V, LDV,
      $                   T, LDT, C, LDC, WORK, LDWORK )
+#ifdef _OPENACC
+!$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK auxiliary routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -201,12 +206,12 @@
 !     June 2013
 !
 !     .. Scalar Arguments ..
-      CHARACTER          DIRECT, SIDE, STOREV, TRANS
-      INTEGER            K, LDC, LDT, LDV, LDWORK, M, N
+      CHARACTER,intent(in)::          DIRECT, SIDE, STOREV, TRANS
+      INTEGER,intent(in)::            K, LDC, LDT, LDV, LDWORK, M, N
 !     ..
 !     .. Array Arguments ..
-      DOUBLE PRECISION   C( LDC, * ), T( LDT, * ), V( LDV, * ),
-     $                   WORK( LDWORK, * )
+      DOUBLE PRECISION,intent(inout) ::   C( LDC, * ), T( LDT, * ) 
+      DOUBLE PRECISION,intent(inout) ::   V( LDV, * ), WORK( LDWORK, * )
 !     ..
 !
 !  =====================================================================
@@ -218,6 +223,8 @@
 !     .. Local Scalars ..
       CHARACTER          TRANST
       INTEGER            I, J
+      logical :: is_TN,is_DF,is_SL,is_SR,is_STC,is_STR
+#if (0)
 !     ..
 !     .. External Functions ..
       LOGICAL            LSAME
@@ -225,6 +232,7 @@
 !     ..
 !     .. External Subroutines ..
       EXTERNAL           DCOPY, DGEMM, DTRMM
+#endif
 !     ..
 !     .. Executable Statements ..
 !
@@ -233,21 +241,29 @@
       IF( M.LE.0 .OR. N.LE.0 )
      $   RETURN
 !
-      IF( LSAME( TRANS, 'N' ) ) THEN
+      is_TN = (TRANS.eq.'N').or.(TRANS.eq.'n')
+      is_DF = (DIRECT.eq.'F').or.(DIRECT.eq.'f')
+      is_SL = (SIDE.eq.'L').or.(SIDE.eq.'l')
+      is_SR = (SIDE.eq.'R').or.(SIDE.eq.'r')
+      is_STC = (STOREV.eq.'C').or.(STOREV.eq.'c')
+      is_STR = (STOREV.eq.'R').or.(STOREV.eq.'r')
+
+
+      IF( is_TN ) THEN
          TRANST = 'T'
       ELSE
          TRANST = 'N'
       END IF
 !
-      IF( LSAME( STOREV, 'C' ) ) THEN
+      IF( is_STC ) THEN
 !
-         IF( LSAME( DIRECT, 'F' ) ) THEN
+         IF( is_DF ) THEN
 !
 !           Let  V =  ( V1 )    (first K rows)
 !                     ( V2 )
 !           where  V1  is unit lower triangular.
 !
-            IF( LSAME( SIDE, 'L' ) ) THEN
+            IF( is_SL ) THEN
 !
 !              Form  H * C  or  H**T * C  where  C = ( C1 )
 !                                                    ( C2 )
@@ -296,13 +312,18 @@
 !
 !              C1 := C1 - W**T
 !
+#ifdef _OPENMP
+!$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 30 J = 1, K
                   DO 20 I = 1, N
                      C( J, I ) = C( J, I ) - WORK( I, J )
    20             CONTINUE
    30          CONTINUE
 !
-            ELSE IF( LSAME( SIDE, 'R' ) ) THEN
+            ELSE IF( is_SR ) THEN
 !
 !              Form  C * H  or  C * H**T  where  C = ( C1  C2 )
 !
@@ -350,6 +371,11 @@
 !
 !              C1 := C1 - W
 !
+#ifdef _OPENMP
+!$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 60 J = 1, K
                   DO 50 I = 1, M
                      C( I, J ) = C( I, J ) - WORK( I, J )
@@ -363,7 +389,7 @@
 !                     ( V2 )    (last K rows)
 !           where  V2  is unit upper triangular.
 !
-            IF( LSAME( SIDE, 'L' ) ) THEN
+            IF( is_SL ) THEN
 !
 !              Form  H * C  or  H**T * C  where  C = ( C1 )
 !                                                    ( C2 )
@@ -410,13 +436,18 @@
 !
 !              C2 := C2 - W**T
 !
+#ifdef _OPENMP
+!$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 90 J = 1, K
                   DO 80 I = 1, N
                      C( M-K+J, I ) = C( M-K+J, I ) - WORK( I, J )
    80             CONTINUE
    90          CONTINUE
 !
-            ELSE IF( LSAME( SIDE, 'R' ) ) THEN
+            ELSE IF( is_SR ) THEN
 !
 !              Form  C * H  or  C * H**T  where  C = ( C1  C2 )
 !
@@ -462,6 +493,11 @@
 !
 !              C2 := C2 - W
 !
+#ifdef _OPENMP
+!$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 120 J = 1, K
                   DO 110 I = 1, M
                      C( I, N-K+J ) = C( I, N-K+J ) - WORK( I, J )
@@ -470,14 +506,14 @@
             END IF
          END IF
 !
-      ELSE IF( LSAME( STOREV, 'R' ) ) THEN
+      ELSE IF( is_STR ) THEN
 !
-         IF( LSAME( DIRECT, 'F' ) ) THEN
+         IF( is_DF ) THEN
 !
 !           Let  V =  ( V1  V2 )    (V1: first K columns)
 !           where  V1  is unit upper triangular.
 !
-            IF( LSAME( SIDE, 'L' ) ) THEN
+            IF( is_SL ) THEN
 !
 !              Form  H * C  or  H**T * C  where  C = ( C1 )
 !                                                    ( C2 )
@@ -526,13 +562,18 @@
 !
 !              C1 := C1 - W**T
 !
+#ifdef _OPENMP
+!$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 150 J = 1, K
                   DO 140 I = 1, N
                      C( J, I ) = C( J, I ) - WORK( I, J )
   140             CONTINUE
   150          CONTINUE
 !
-            ELSE IF( LSAME( SIDE, 'R' ) ) THEN
+            ELSE IF( is_SR ) THEN
 !
 !              Form  C * H  or  C * H**T  where  C = ( C1  C2 )
 !
@@ -580,6 +621,11 @@
 !
 !              C1 := C1 - W
 !
+#ifdef _OPENMP
+!$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 180 J = 1, K
                   DO 170 I = 1, M
                      C( I, J ) = C( I, J ) - WORK( I, J )
@@ -593,7 +639,7 @@
 !           Let  V =  ( V1  V2 )    (V2: last K columns)
 !           where  V2  is unit lower triangular.
 !
-            IF( LSAME( SIDE, 'L' ) ) THEN
+            IF( is_SL ) THEN
 !
 !              Form  H * C  or  H**T * C  where  C = ( C1 )
 !                                                    ( C2 )
@@ -640,13 +686,18 @@
 !
 !              C2 := C2 - W**T
 !
+#ifdef _OPENMP
+!$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 210 J = 1, K
                   DO 200 I = 1, N
                      C( M-K+J, I ) = C( M-K+J, I ) - WORK( I, J )
   200             CONTINUE
   210          CONTINUE
 !
-            ELSE IF( LSAME( SIDE, 'R' ) ) THEN
+            ELSE IF( is_SR ) THEN
 !
 !              Form  C * H  or  C * H'  where  C = ( C1  C2 )
 !
@@ -692,6 +743,11 @@
 !
 !              C1 := C1 - W
 !
+#ifdef _OPENMP
+!$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
                DO 240 J = 1, K
                   DO 230 I = 1, M
                      C( I, N-K+J ) = C( I, N-K+J ) - WORK( I, J )
