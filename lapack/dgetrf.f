@@ -1,5 +1,9 @@
       SUBROUTINE DGETRF( M, N, A, LDA, IPIV, INFO )
+#ifdef _OPENACC
 !$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK routine (version 3.0) --
 !     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
@@ -125,7 +129,11 @@
 !
             IF( INFO.EQ.0 .AND. IINFO.GT.0 )
      $         INFO = IINFO + J - 1
+#ifdef _OPENACC
 !$acc loop vector 
+#else
+!$omp parallel do simd
+#endif
             DO 10 I = J, MIN( M, J+JB-1 )
                IPIV( I ) = J - 1 + IPIV( I )
    10       CONTINUE

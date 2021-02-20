@@ -1,5 +1,9 @@
       SUBROUTINE DGETF2( M, N, A, LDA, IPIV, INFO )
+#ifdef _OPENACC
 !$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK routine (version 2.0) --
 !     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
