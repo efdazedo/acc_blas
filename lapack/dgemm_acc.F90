@@ -1,6 +1,10 @@
       subroutine dgemm(transA,transB,m,n,kk,                              &
      & alpha, A,lda, B,ldb, beta, C,ldc )
+#ifdef _OPENACC
 !$acc routine vector
+#else
+!$omp declare target
+#endif
       implicit none
       character, intent(in) :: transA,transB
       integer, intent(in) :: m,n,kk,lda,ldb,ldc
@@ -16,7 +20,11 @@
 
       is_transA = (transA.eq.'T').or.(transA.eq.'t')
       is_transB = (transB.eq.'T').or.(transB.eq.'t')
+#ifdef _OPENACC
 !$acc loop vector collapse(2)
+#else
+!$omp parallel simd  collapse(2)
+#endif
       do j=1,n
       do i=1,m
         if (beta.eq.0) then
@@ -31,7 +39,11 @@
       do istart=1,m,nb
          jend = min(n,jstart+nb-1)
          iend = min(m,istart+nb-1)
+#ifdef _OPENACC
 !$acc loop vector collapse(2) private(cij,aik,bkj,k)
+#else
+!$omp parallel do simd collapse(2) private(cij,aik,bkj,k)
+#endif
       do j=jstart,jend
       do i=istart,iend
         cij = 0
