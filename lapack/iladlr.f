@@ -89,10 +89,10 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      INTEGER            M, N, LDA
+      INTEGER, intent(in) ::             M, N, LDA
 !     ..
 !     .. Array Arguments ..
-      DOUBLE PRECISION   A( LDA, * )
+      DOUBLE PRECISION, intent(in) ::   A( LDA, * )
 !     ..
 !
 !  =====================================================================

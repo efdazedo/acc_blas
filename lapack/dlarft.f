@@ -174,11 +174,12 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      CHARACTER          DIRECT, STOREV
-      INTEGER            K, LDT, LDV, N
+      CHARACTER,intent(in)::          DIRECT, STOREV
+      INTEGER,intent(in)::            K, LDT, LDV, N
 !     ..
 !     .. Array Arguments ..
-      DOUBLE PRECISION   T( LDT, * ), TAU( * ), V( LDV, * )
+      DOUBLE PRECISION,intent(inout)::   T( LDT, * )
+      DOUBLE PRECISION,intent(inout)::   TAU( * ), V( LDV, * )
 !     ..
 !
 !  =====================================================================

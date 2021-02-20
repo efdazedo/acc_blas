@@ -74,7 +74,7 @@
 !     June 2017
 !
 !     .. Scalar Arguments ..
-      DOUBLE PRECISION   X, Y
+      DOUBLE PRECISION, intent(in) ::   X, Y
 !     ..
 !
 !  =====================================================================
