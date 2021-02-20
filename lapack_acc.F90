@@ -36,7 +36,6 @@
 
 #include "lapack/dger.f"
 #include "lapack/dgemv.f"
-
 #include "lapack/dtrsm.f"
 #include "lapack/dtrmm.f"
 
@@ -47,21 +46,11 @@
 #include "lapack/dgbtrs.f"
 #include "lapack/dgbtrf.f"
 #include "lapack/dgbsv.f"
-
 #include "lapack/dgbmv.f"
-
-
-
-
- 
 
 
 #include "lapack/dgetf2.f"
 #include "lapack/dgetrs.f"
 #include "lapack/dgetrf.f"
-
-
-
-
 
        end module lapack_acc
