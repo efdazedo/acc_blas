@@ -78,7 +78,11 @@
 !>
 !  =====================================================================
       SUBROUTINE DSCAL(N,DA,DX,INCX)
+#ifdef _OPENACC
 !$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- Reference BLAS level1 routine (version 3.8.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -111,14 +115,22 @@
 !
          M = MOD(N,5)
          IF (M.NE.0) THEN
+#ifdef _OPENACC
 !$acc loop vector private(I)
+#else
+!$omp parallel do simd private(I)
+#endif
             DO I = 1,M
                DX(I) = DA*DX(I)
             END DO
             IF (N.LT.5) RETURN
          END IF
          MP1 = M + 1
+#ifdef _OPENACC
 !$acc loop vector private(I)
+#else
+!$omp parallel do simd private(I)
+#endif
          DO I = MP1,N,5
             DX(I) = DA*DX(I)
             DX(I+1) = DA*DX(I+1)
@@ -131,7 +143,11 @@
 !        code for increment not equal to 1
 !
          NINCX = N*INCX
+#ifdef _OPENACC
 !$acc loop vector private(I)
+#else
+!$omp parallel do simd private(I)
+#endif
          DO I = 1,NINCX,INCX
             DX(I) = DA*DX(I)
          END DO

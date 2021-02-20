@@ -88,7 +88,11 @@
 !>
 !  =====================================================================
       SUBROUTINE DAXPY(N,DA,DX,INCX,DY,INCY)
+#ifdef _OPENACC
 !$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- Reference BLAS level1 routine (version 3.8.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -122,14 +126,22 @@
 !
          M = MOD(N,4)
          IF (M.NE.0) THEN
+#ifdef _OPENACC
 !$acc loop vector 
+#else
+!$omp parallel do simd
+#endif
             DO I = 1,M
                DY(I) = DY(I) + DA*DX(I)
             END DO
          END IF
          IF (N.LT.4) RETURN
          MP1 = M + 1
+#ifdef _OPENACC
 !$acc loop vector 
+#else
+!$omp parallel do simd
+#endif
          DO I = MP1,N,4
             DY(I) = DY(I) + DA*DX(I)
             DY(I+1) = DY(I+1) + DA*DX(I+1)
@@ -147,7 +159,11 @@
          IF (INCY.LT.0) IY = (-N+1)*INCY + 1
          IX0 = IX
          IY0 = IY
+#ifdef _OPENACC
 !$acc loop vector private(IX,IY)
+#else
+!$omp parallel do simd private(IX,IY)
+#endif
          DO I = 1,N
           IX = IX0 + (I-1)*INCX
           IY = IY0 + (I-1)*INCY

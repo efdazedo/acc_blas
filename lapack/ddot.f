@@ -81,7 +81,11 @@
 !>
 !  =====================================================================
       DOUBLE PRECISION FUNCTION DDOT(N,DX,INCX,DY,INCY)
+#ifdef _OPENACC
 !$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- Reference BLAS level1 routine (version 3.8.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -118,7 +122,11 @@
          IF (M.NE.0) THEN
             DTEMP0 = DTEMP
             DTEMP = 0.0d0
+#ifdef _OPENACC
 !$acc loop vector  reduction(+:DTEMP)
+#else
+!$omp parallel do simd reduction(+:DTEMP)
+#endif
             DO I = 1,M
                DTEMP = DTEMP + DX(I)*DY(I)
             END DO
@@ -132,7 +140,11 @@
          MP1 = M + 1
          DTEMP0 = DTEMP
          DTEMP = 0.0d0
+#ifdef _OPENACC
 !$acc loop vector  reduction(+:DTEMP)
+#else
+!$omp parallel do simd reduction(+:DTEMP)
+#endif
          DO I = MP1,N,5
           DTEMP = DTEMP + DX(I)*DY(I) + DX(I+1)*DY(I+1) +
      $            DX(I+2)*DY(I+2) + DX(I+3)*DY(I+3) + DX(I+4)*DY(I+4)
@@ -151,7 +163,11 @@
          IY0 = IY
          DTEMP0 = DTEMP
          DTEMP = 0.0d0
+#ifdef _OPENACC
 !$acc loop vector private(IX,IY) reduction(+:DTEMP)
+#else
+!$omp parallel do simd private(IX,IY) reduction(+:DTEMP)
+#endif
          DO I = 1,N
             IX = IX0 + (I-1)*INCX
             IY = IY0 + (I-1)*INCY
