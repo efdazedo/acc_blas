@@ -1,4 +1,4 @@
-#if _OPENMP >= 201107
+#if _OPENMP >= 201511
 #define OMP_TARGET
 #endif
 
