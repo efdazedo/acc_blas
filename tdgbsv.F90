@@ -65,7 +65,7 @@
 
 
 #ifdef _OPENACC
-!$acc kernel
+!$acc kernels
 !$acc loop independent gang
 #elif defined(OMP_TARGET)
 !$omp target teams
