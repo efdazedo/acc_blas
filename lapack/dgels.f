@@ -182,6 +182,7 @@
 !  =====================================================================
       SUBROUTINE DGELS( TRANS, M, N, NRHS, A, LDA, B, LDB, WORK, LWORK,
      $                  INFO )
+!$acc routine vector
 !
 !  -- LAPACK driver routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -189,11 +190,13 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      CHARACTER          TRANS
-      INTEGER            INFO, LDA, LDB, LWORK, M, N, NRHS
+      CHARACTER,intent(in) ::          TRANS
+      INTEGER,intent(in) ::            LDA, LDB, LWORK, M, N, NRHS
+      INTEGER,intent(inout) ::         INFO, 
 !     ..
 !     .. Array Arguments ..
-      DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), WORK( * )
+      DOUBLE PRECISION,intent(inout)::   A( LDA, * )
+      DOUBLE PRECISION,intent(inout)::   B( LDB, * ), WORK( * )
 !     ..
 !
 !  =====================================================================
@@ -209,6 +212,7 @@
 !     ..
 !     .. Local Arrays ..
       DOUBLE PRECISION   RWORK( 1 )
+#if (0)
 !     ..
 !     .. External Functions ..
       LOGICAL            LSAME
@@ -219,6 +223,7 @@
 !     .. External Subroutines ..
       EXTERNAL           DGELQF, DGEQRF, DLASCL, DLASET, DORMLQ, DORMQR,
      $                   DTRTRS, XERBLA
+#endif
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          DBLE, MAX, MIN
@@ -392,6 +397,7 @@
 !
 !           B(N+1:M,1:NRHS) = ZERO
 !
+!$acc loop vector collapse(2)
             DO 20 J = 1, NRHS
                DO 10 I = N + 1, M
                   B( I, J ) = ZERO
@@ -434,6 +440,7 @@
 !
 !           B(M+1:N,1:NRHS) = 0
 !
+!$acc loop vector collapse(2)
             DO 40 J = 1, NRHS
                DO 30 I = M + 1, N
                   B( I, J ) = ZERO

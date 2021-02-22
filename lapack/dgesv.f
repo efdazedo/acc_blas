@@ -121,6 +121,7 @@
 !
 !  =====================================================================
       SUBROUTINE DGESV( N, NRHS, A, LDA, IPIV, B, LDB, INFO )
+!$acc routine vector
 !
 !  -- LAPACK driver routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -128,17 +129,20 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      INTEGER            INFO, LDA, LDB, N, NRHS
+      INTEGER,intent(in) ::            LDA, LDB, N, NRHS
+      INTEGER,intent(inout) ::         INFO
 !     ..
 !     .. Array Arguments ..
-      INTEGER            IPIV( * )
-      DOUBLE PRECISION   A( LDA, * ), B( LDB, * )
+      INTEGER,intent(inout) ::             IPIV( * )
+      DOUBLE PRECISION, intent(inout) ::   A( LDA, * ), B( LDB, * )
 !     ..
 !
 !  =====================================================================
 !
+#if (0)
 !     .. External Subroutines ..
       EXTERNAL           DGETRF, DGETRS, XERBLA
+#endif
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          MAX
