@@ -100,6 +100,7 @@
 !     ..
 !     .. Executable Statements ..
 !
+      DLAPY2 = 0
       X_IS_NAN = DISNAN( X )
       Y_IS_NAN = DISNAN( Y )
       IF ( X_IS_NAN ) DLAPY2 = X

@@ -56,6 +56,7 @@
       beta = 0
       trans = 'N'
       ioffset = kl+1
+      irhs = 1
 
       B = 0
       info = 0
@@ -74,10 +75,10 @@
 
 #ifdef _OPENACC
 !$acc kernels
-!$acc loop independent gang
+!$acc loop independent gang collapse(2)
 #elif defined(OMP_TARGET)
 !$omp target teams
-!$omp distribute
+!$omp distribute collapse(2)
 #else
 !$omp parallel 
 !$omp do collapse(2)

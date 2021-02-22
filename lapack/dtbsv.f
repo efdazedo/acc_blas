@@ -236,6 +236,7 @@
 !     Test the input parameters.
 !
       INFO = 0
+      kx = 0
 
 
       is_UU = (UPLO.eq.'U').or.(UPLO.eq.'u')

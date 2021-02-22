@@ -39,7 +39,9 @@
 
 
 
-#include "lapack/dger.f"
+!#include "lapack/dger.f"
+#include "lapack/dger_acc.F90"
+
 #include "lapack/dgemv.f"
 #include "lapack/dtrsm.f"
 #include "lapack/dtrmm.f"
