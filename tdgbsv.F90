@@ -25,7 +25,7 @@
       real*8, allocatable :: AB_org(:,:,:)
       character :: trans
 
-      nmat = 64
+      nmat = 1
       nrhs = 1
       m = 40
       kl = m
@@ -42,6 +42,7 @@
       allocate(ipiv(n,nmat),info(nmat))
 
       call random_number(AB)
+      AB = 2*AB-1
       AB_org = AB
 
       call random_number(X)
@@ -56,10 +57,17 @@
       trans = 'N'
       ioffset = kl+1
 
+      B = 0
+      info = 0
+
 #ifdef _OPENACC
-!$acc data copyin(AB,X) create(ipiv) copy(B,info)
+!$acc data copyin(AB,X) create(ipiv) copy(B,info)                        &
+!$acc& copyin(trans,nrowA,ncolA,alpha,beta,ldab,ldb,ldx,n,nrhs,kl,ku)    &
+!$acc& copyin(ioffset,inc1,inc2)
 #elif defined(OMP_TARGET)
-!$omp target data map(to:AB,X) map(alloc:ipiv) map(tofrom:B,info)
+!$omp target data map(to:AB,X) map(alloc:ipiv) map(tofrom:B,info)        &
+!$omp& map(to:trans,nrowA,ncolA,alpha,beta,ldab,ldb,ldx,n,nrhs,kl,ku)    &
+!$omp& map(to:ioffset,inc1,inc2)
 #else
 #endif
 
@@ -88,7 +96,7 @@
 !$acc update host(B)
 #elif defined(OMP_TARGET)
 !$omp end target teams
-!$omp target update host(B)
+!$omp target update from(B)
 #else
 !$omp end parallel
 #endif
