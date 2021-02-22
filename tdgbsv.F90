@@ -47,19 +47,30 @@
       beta = 0
       trans = 'N'
       ioffset = kl+1
+
+#ifdef _OPENACC
+!$acc data copyin(AB,X) create(ipiv) copy(B,info)
+#else
 !$omp parallel do collapse(2)
+#endif
+
       do imat=1,nmat
       do irhs=1,nrhs
+#ifdef _OPENACC
+       call dgbmv_gpu( trans, nrowA,ncolA,kl,ku,alpha,                   &
+     &            AB(ioffset,1,imat),ldab,                               &
+     &            X(:,irhs,imat),inc1,beta,B(:,irhs,imat),inc2)
+#else
        call dgbmv_cpu( trans, nrowA,ncolA,kl,ku,alpha,                   &
      &            AB(ioffset,1,imat),ldab,                               &
      &            X(:,irhs,imat),inc1,beta,B(:,irhs,imat),inc2)
+#endif
       enddo
       enddo
       B_org = B
       
 
       info = 0
-!$acc data copyin(AB) create(ipiv) copy(B,info)
       call system_clock(tstart,count_rate)
 !$acc kernels
 !$acc loop independent gang 

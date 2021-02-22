@@ -59,6 +59,7 @@
 #include "lapack/dgetf2.f"
 #include "lapack/dgetrs.f"
 #include "lapack/dgetrf.f"
+#include "lapack/dgesv.f"
 
 #include "lapack/dlamch.f"
 #include "lapack/dlaisnan.f"

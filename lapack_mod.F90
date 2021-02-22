@@ -51,4 +51,30 @@
 
       end interface
 
+      interface
+      subroutine dgesv(n,nrhs,A,lda,ipiv,B,ldb,info)
+      implicit none
+      integer n,nrhs,lda,ldb,info
+      integer ipiv(*)
+      real*8 A(lda,*),B(ldb,*)
+      end subroutine dgesv
+
+      subroutine dgetrf(m,n,A,lda,ipiv,info)
+      implicit none
+      integer m,n,lda,info
+      integer ipiv(*)
+      real*8 A(lda,*)
+      end subroutine dgetrf
+
+      subroutine dgetrs(trans,n,nrhs, A,lda,ipiv,B,ldb,info)
+      implicit none
+      character trans
+      integer n,nrhs,lda,ldb,info
+      integer ipiv(*)
+      real*8 A(lda,*), B(ldb,*)
+      end subroutine dgetrs
+
+      end interface
+
+
       end module lapack_mod
