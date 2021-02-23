@@ -60,13 +60,14 @@
 
       B = 0
       info = 0
+      ipiv = 0
 
 #ifdef _OPENACC
-!$acc data copyin(AB,X) create(ipiv) copy(B,info)                        &
+!$acc data copyin(AB,X) copy(B,info,ipiv)                                &
 !$acc& copyin(trans,nrowA,ncolA,alpha,beta,ldab,ldb,ldx,n,nrhs,kl,ku)    &
 !$acc& copyin(ioffset,inc1,inc2)
 #elif defined(OMP_TARGET)
-!$omp target data map(to:AB,X) map(alloc:ipiv) map(tofrom:B,info)        &
+!$omp target data map(to:AB,X)  map(tofrom:B,info,ipiv)                  &
 !$omp& map(to:trans,nrowA,ncolA,alpha,beta,ldab,ldb,ldx,n,nrhs,kl,ku)    &
 !$omp& map(to:ioffset,inc1,inc2)
 #else
@@ -95,18 +96,21 @@
 !$acc end kernels
 !$acc wait
 !$acc update host(B)
+!$acc wait
 #elif defined(OMP_TARGET)
 !$omp end target teams
+!$omp taskwait
 !$omp target update from(B)
+!$omp taskwait
 #else
 !$omp end parallel
+!$omp barrier
 #endif
 
 
       B_org = B
       
 
-      info = 0
       call system_clock(tstart,count_rate)
 #ifdef _OPENACC
 !$acc kernels

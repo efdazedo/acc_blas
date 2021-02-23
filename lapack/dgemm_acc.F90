@@ -23,7 +23,7 @@
 #ifdef _OPENACC
 !$acc loop vector collapse(2)
 #else
-!$omp parallel simd  collapse(2)
+!$omp parallel do simd  collapse(2)
 #endif
       do j=1,n
       do i=1,m
