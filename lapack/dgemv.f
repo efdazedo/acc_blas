@@ -185,6 +185,7 @@
 !     .. Local Scalars ..
       DOUBLE PRECISION TEMP
       INTEGER I,INFO,IX,IY,J,JX,JY,KX,KY,LENX,LENY
+      integer :: IX0, IY0
       logical :: is_N, is_T, is_C
 !     ..
 !     .. External Functions ..
@@ -279,24 +280,26 @@
           ELSE
               IY = KY
               IF (BETA.EQ.ZERO) THEN
+                      IY0 = IY
 #ifdef _OPENACC
 !$acc loop vector private(IY)
 #else
 !$omp parallel do simd private(IY)
 #endif
                   DO 30 I = 1,LENY
+                      IY = IY0 + (I-1)*INCY
                       Y(IY) = ZERO
-                      IY = IY + INCY
    30             CONTINUE
               ELSE
+                      IY0 = IY
 #ifdef _OPENACC
 !$acc loop vector private(IY)
 #else
 !$omp parallel do simd private(IY)
 #endif
                   DO 40 I = 1,LENY
+                      IY = IY0 + (I-1)*INCY
                       Y(IY) = BETA*Y(IY)
-                      IY = IY + INCY
    40             CONTINUE
               END IF
           END IF
@@ -324,14 +327,15 @@
               DO 80 J = 1,N
                   TEMP = ALPHA*X(JX)
                   IY = KY
+                  IY0 = IY
 #ifdef _OPENACC
 !$acc loop vector private(IY)
 #else
 !$omp parallel do simd private(IY)
 #endif
                   DO 70 I = 1,M
+                      IY = IY0 + (I-1)*INCY
                       Y(IY) = Y(IY) + TEMP*A(I,J)
-                      IY = IY + INCY
    70             CONTINUE
                   JX = JX + INCX
    80         CONTINUE
@@ -359,14 +363,15 @@
               DO 120 J = 1,N
                   TEMP = ZERO
                   IX = KX
+                  IX0 = IX
 #ifdef _OPENACC
 !$acc loop vector reduction(+:TEMP) private(IX)
 #else
 !$omp parallel do simd reduction(+:TEMP) private(IX)
 #endif
                   DO 110 I = 1,M
+                      IX = IX0 + (I-1)*INCX
                       TEMP = TEMP + A(I,J)*X(IX)
-                      IX = IX + INCX
   110             CONTINUE
                   Y(JY) = Y(JY) + ALPHA*TEMP
                   JY = JY + INCY
