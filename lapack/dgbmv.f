@@ -325,7 +325,7 @@
                       Y(IY) = ZERO
    30             CONTINUE
               ELSE
-                 IY = IY0
+                 IY0 = IY
 #ifdef _OPENACC
 !$acc loop vector private(IY)
 #else

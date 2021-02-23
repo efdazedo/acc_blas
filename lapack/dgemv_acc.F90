@@ -19,8 +19,7 @@
 
       integer :: i,j,jx,iy
       logical :: is_TT,is_TC,is_TN, istrans,notrans
-      integer :: nrowx, nrowy
-      real*8 :: yi, aij
+      real*8 :: yi
 
       is_TT = (trans.eq.'T').or.(trans.eq.'t')
       is_TC = (trans.eq.'C').or.(trans.eq.'c')
