@@ -214,6 +214,7 @@
 !     .. Local Scalars ..
       DOUBLE PRECISION TEMP
       INTEGER I,INFO,IX,IY,J,JX,JY,K,KUP1,KX,KY,LENX,LENY
+      integer :: IX0,IY0, Istart,Iend
 #if (0)
 !     ..
 !     .. External Functions ..
@@ -313,24 +314,26 @@
           ELSE
               IY = KY
               IF (BETA.EQ.ZERO) THEN
+                      IY0 = IY
 #ifdef _OPENACC
 !$acc loop vector private(IY)
 #else
 !$omp parallel do simd private(IY)
 #endif
                   DO 30 I = 1,LENY
+                      IY = IY0 + (I-1)*INCY
                       Y(IY) = ZERO
-                      IY = IY + INCY
    30             CONTINUE
               ELSE
+                 IY = IY0
 #ifdef _OPENACC
 !$acc loop vector private(IY)
 #else
 !$omp parallel do simd private(IY)
 #endif
                   DO 40 I = 1,LENY
+                      IY = IY0 + (I-1)*INCY
                       Y(IY) = BETA*Y(IY)
-                      IY = IY + INCY
    40             CONTINUE
               END IF
           END IF
@@ -361,14 +364,18 @@
                   TEMP = ALPHA*X(JX)
                   IY = KY
                   K = KUP1 - J
+                  IY0 = IY
+                  Istart = MAX(1,J-KU)
+                  Iend = MIN(M,J+KL)
 #ifdef _OPENACC
 !$acc loop vector  private(IY)
 #else
 !$omp parallel do simd private(IY)
 #endif
-                  DO 70 I = MAX(1,J-KU),MIN(M,J+KL)
+!                  DO 70 I = MAX(1,J-KU),MIN(M,J+KL)
+                   DO 70 I = Istart,Iend
+                      IY = IY0 + (I-Istart)*INCY
                       Y(IY) = Y(IY) + TEMP*A(K+I,J)
-                      IY = IY + INCY
    70             CONTINUE
                   JX = JX + INCX
                   IF (J.GT.KU) KY = KY + INCY
@@ -399,14 +406,18 @@
                   TEMP = ZERO
                   IX = KX
                   K = KUP1 - J
+                  IX0 = IX
+                  Istart = MAX(1,J-KU)
+                  Iend = MIN(M,J+KL)
 #ifdef _OPENACC
 !$acc loop vector reduction(+:TEMP) private(IX)
 #else
 !$omp parallel do simd reduction(+:TEMP) private(IX)
 #endif
-                  DO 110 I = MAX(1,J-KU),MIN(M,J+KL)
+!                  DO 110 I = MAX(1,J-KU),MIN(M,J+KL)
+                  DO 110 I = Istart,Iend
+                      IX = IX0 + (I-Istart)*INCX
                       TEMP = TEMP + A(K+I,J)*X(IX)
-                      IX = IX + INCX
   110             CONTINUE
                   Y(JY) = Y(JY) + ALPHA*TEMP
                   JY = JY + INCY
