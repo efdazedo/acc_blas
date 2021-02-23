@@ -2,7 +2,7 @@
 !     simple test of calling dgemm
       program test2
       use lapack_mod, only : dgemm_cpu => dgemm
-      use lapack_acc
+      use lapack_acc, only : dgemm_acc => dgemm
       use omp_lib
       implicit none
       integer, parameter :: idebug = 0
@@ -21,15 +21,18 @@
 
       double precision :: time_gpu, time_cpu
       double precision :: alpha,beta
-      double precision :: abserr,maxerr
-      double precision :: hCij, Cij
+      double precision :: maxerr
       double precision :: gflops
       integer :: nmax
+      integer :: nerrors
+      logical :: isok
       double precision :: normhC
 
 #ifdef USE_MANAGED
       attributes(managed) :: A,B,C
 #endif
+
+      nerrors = 0
 
       nthreads = 1
 !$omp parallel
@@ -38,7 +41,7 @@
 !$omp end master
 !$omp end parallel
 
-      nwalkers = 1 
+      nwalkers = 4 
       nmax = 100
       n = nmax
       print*,'n,nwalkers,nthreads',n,nwalkers,nthreads
@@ -91,7 +94,7 @@
            ld1 = size(A,1)
            ld2 = size(B,1)
            ld3 = size(C,1)
-           call dgemm(transA,transB,mm,nn,kk,                            &
+           call dgemm_acc(transA,transB,mm,nn,kk,                        &
      &            alpha,A(1,1,walker),ld1,                               &
      &                  B(1,1,walker),ld2,                               &
      &            beta, C(1,1,walker),ld3 )
@@ -129,6 +132,10 @@
 
          normhC = maxval( abs(hC(1:mm,1:nn,1:nwalkers)))
 
+         isok = (maxerr <= tol * normhC )
+         if (.not.isok) then
+         nerrors = nerrors + 1
+
          print 9005,transA,transB,mm,nn,kk,alpha,beta
  9005    format(' transA,transB= ',2(1X,A),                              &
      &          ' mm,nn,kk ', 3(1x,i5),                                  &
@@ -137,9 +144,10 @@
          print*,'Gflops_gpu=',gflops/time_gpu,                           &
      &          ' Gflops_cpu=',gflops/time_cpu,                          &
      &          ' maxerr=',maxerr,' normhC ',normhC
+         endif
 
 
-         if ((idebug >= 2) .or. (maxerr > tol * normhC)) then
+         if ((idebug >= 2) .or. (.not.isok)) then
           print 9005,transA,transB,mm,nn,kk,alpha,beta  
           do j=1,nn
           do i=1,mm
@@ -158,10 +166,11 @@
          enddo
          enddo
 
+         if (nerrors.eq.0) then
+           print*,'ALL OK'
+         else
+           print*,'NOT OK'
+         endif
 
       stop
       end program test2
-
-
-
-
