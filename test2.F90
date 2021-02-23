@@ -31,7 +31,6 @@
       attributes(managed) :: A,B,C
 #endif
 
-!$acc init
       nthreads = 1
 !$omp parallel
 !$omp master

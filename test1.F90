@@ -21,7 +21,6 @@
       attributes(managed) :: A,B,C
 #endif
 
-!$acc init
       nwalkers = 1024 
       n = 2*128
       print*,'n,nwalkers',n,nwalkers
