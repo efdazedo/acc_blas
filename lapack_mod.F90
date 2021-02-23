@@ -10,6 +10,15 @@
       real*8 alpha,beta
       real*8 A(lda,*),B(ldb,*),C(ldc,*)
       end subroutine dgemm
+
+      subroutine dtrmv(uplo,trans,diag,n,A,lda,X,incx)
+      implicit none
+      character uplo,trans,diag
+      integer n,lda,incx
+      real*8 A(lda,*)
+      real*8 X(*)
+      end subroutine dtrmv
+
       end interface
 
 
