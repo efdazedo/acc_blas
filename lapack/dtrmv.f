@@ -146,7 +146,11 @@
 !>
 !  =====================================================================
       SUBROUTINE DTRMV(UPLO,TRANS,DIAG,N,A,LDA,X,INCX)
+#ifdef _OPENACC
 !$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- Reference BLAS level2 routine (version 3.7.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -248,7 +252,11 @@
                   DO 20 J = 1,N
                       IF (X(J).NE.ZERO) THEN
                           TEMP = X(J)
+#ifdef _OPENACC
 !$acc loop vector 
+#else
+!$omp parallel do simd
+#endif
                           DO 10 I = 1,J - 1
                               X(I) = X(I) + TEMP*A(I,J)
    10                     CONTINUE
@@ -261,7 +269,11 @@
                       IF (X(JX).NE.ZERO) THEN
                           TEMP = X(JX)
                           IX = KX
+#ifdef _OPENACC
 !$acc loop vector private(IX)
+#else
+!$omp parallel do simd private(IX)
+#endif
                           DO 30 I = 1,J - 1
                               X(IX) = X(IX) + TEMP*A(I,J)
                               IX = IX + INCX
@@ -276,7 +288,11 @@
                   DO 60 J = N,1,-1
                       IF (X(J).NE.ZERO) THEN
                           TEMP = X(J)
+#ifdef _OPENACC
 !$acc loop vector
+#else
+!$omp parallel do simd
+#endif
                           DO 50 I = N,J + 1,-1
                               X(I) = X(I) + TEMP*A(I,J)
    50                     CONTINUE
@@ -290,7 +306,11 @@
                       IF (X(JX).NE.ZERO) THEN
                           TEMP = X(JX)
                           IX = KX
+#ifdef _OPENACC
 !$acc loop vector private(IX)
+#else
+!$omp parallel do simd private(IX)
+#endif
                           DO 70 I = N,J + 1,-1
                               X(IX) = X(IX) + TEMP*A(I,J)
                               IX = IX - INCX
@@ -310,7 +330,11 @@
                   DO 100 J = N,1,-1
                       TEMP = X(J)
                       IF (NOUNIT) TEMP = TEMP*A(J,J)
+#ifdef _OPENACC
 !$acc loop vector reduction(+:TEMP)
+#else
+!$omp parallel do simd reduction(+:TEMP)
+#endif
                       DO 90 I = J - 1,1,-1
                           TEMP = TEMP + A(I,J)*X(I)
    90                 CONTINUE
@@ -322,7 +346,11 @@
                       TEMP = X(JX)
                       IX = JX
                       IF (NOUNIT) TEMP = TEMP*A(J,J)
+#ifdef _OPENACC
 !$acc loop vector reduction(+:TEMP) private(IX)
+#else
+!$omp parallel do simd reduction(+:TEMP) private(IX)
+#endif
                       DO 110 I = J - 1,1,-1
                           IX = IX - INCX
                           TEMP = TEMP + A(I,J)*X(IX)
@@ -336,7 +364,11 @@
                   DO 140 J = 1,N
                       TEMP = X(J)
                       IF (NOUNIT) TEMP = TEMP*A(J,J)
+#ifdef _OPENACC
 !$acc loop vector reduction(+:TEMP)
+#else
+!$omp parallel do simd reduction(+:TEMP)
+#endif
                       DO 130 I = J + 1,N
                           TEMP = TEMP + A(I,J)*X(I)
   130                 CONTINUE
@@ -348,7 +380,11 @@
                       TEMP = X(JX)
                       IX = JX
                       IF (NOUNIT) TEMP = TEMP*A(J,J)
+#ifdef _OPENACC
 !$acc loop vector reduction(+:TEMP) private(IX)
+#else
+!$omp parallel do simd reduction(+:TEMP) private(IX)
+#endif
                       DO 150 I = J + 1,N
                           IX = IX + INCX
                           TEMP = TEMP + A(I,J)*X(IX)
