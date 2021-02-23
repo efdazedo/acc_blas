@@ -174,6 +174,7 @@
 !     .. Local Scalars ..
       DOUBLE PRECISION TEMP
       INTEGER I,INFO,IX,J,JX,KX
+      integer :: IX0,Istart,Iend
       LOGICAL NOUNIT
       logical :: is_UU, is_UL
       logical :: is_TN, is_TC, is_TT
@@ -269,14 +270,15 @@
                       IF (X(JX).NE.ZERO) THEN
                           TEMP = X(JX)
                           IX = KX
+                          IX0 = IX
 #ifdef _OPENACC
 !$acc loop vector private(IX)
 #else
 !$omp parallel do simd private(IX)
 #endif
                           DO 30 I = 1,J - 1
+                              IX = IX0 + (I-1)*INCX
                               X(IX) = X(IX) + TEMP*A(I,J)
-                              IX = IX + INCX
    30                     CONTINUE
                           IF (NOUNIT) X(JX) = X(JX)*A(J,J)
                       END IF
@@ -306,14 +308,18 @@
                       IF (X(JX).NE.ZERO) THEN
                           TEMP = X(JX)
                           IX = KX
+                          IX0 = IX
+                          Iend = N
+                          Istart = J + 1
 #ifdef _OPENACC
 !$acc loop vector private(IX)
 #else
 !$omp parallel do simd private(IX)
 #endif
-                          DO 70 I = N,J + 1,-1
+!                          DO 70 I = N,J + 1,-1
+                          DO 70 I = Iend,Istart,-1
+                              IX = IX0 - (Iend-I)*INCX
                               X(IX) = X(IX) + TEMP*A(I,J)
-                              IX = IX - INCX
    70                     CONTINUE
                           IF (NOUNIT) X(JX) = X(JX)*A(J,J)
                       END IF
@@ -346,13 +352,17 @@
                       TEMP = X(JX)
                       IX = JX
                       IF (NOUNIT) TEMP = TEMP*A(J,J)
+                      IX0 = IX
+                      Iend = J - 1
+                      Istart = 1
 #ifdef _OPENACC
 !$acc loop vector reduction(+:TEMP) private(IX)
 #else
 !$omp parallel do simd reduction(+:TEMP) private(IX)
 #endif
-                      DO 110 I = J - 1,1,-1
-                          IX = IX - INCX
+!                      DO 110 I = J - 1,1,-1
+                      DO 110 I = Iend,Istart,-1
+                          IX = IX0 - (Iend-I+1)*INCX
                           TEMP = TEMP + A(I,J)*X(IX)
   110                 CONTINUE
                       X(JX) = TEMP
@@ -380,13 +390,17 @@
                       TEMP = X(JX)
                       IX = JX
                       IF (NOUNIT) TEMP = TEMP*A(J,J)
+                      IX0 = IX
+                      Istart = J+1
+                      Iend = N
 #ifdef _OPENACC
 !$acc loop vector reduction(+:TEMP) private(IX)
 #else
 !$omp parallel do simd reduction(+:TEMP) private(IX)
 #endif
-                      DO 150 I = J + 1,N
-                          IX = IX + INCX
+!                      DO 150 I = J + 1,N
+                      DO 150 I = Istart,Iend
+                          IX = IX0 + (I-Istart+1)*INCX
                           TEMP = TEMP + A(I,J)*X(IX)
   150                 CONTINUE
                       X(JX) = TEMP
