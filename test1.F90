@@ -12,7 +12,6 @@
       integer :: t1,t2,count_rate
       integer :: ld1,ld2,ld3, mm,nn,kk
       double precision :: alpha,beta
-      character :: transA, transB
       double precision :: abserr,maxerr
       double precision :: hCij, Cij
       double precision :: gflops,ttime 
