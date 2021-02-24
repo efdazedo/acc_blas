@@ -271,15 +271,20 @@
                           TEMP = X(JX)
                           IX = KX
                           IX0 = IX
+                          Istart = 1
+                          Iend = J - 1
 #ifdef _OPENACC
 !$acc loop vector private(IX)
 #else
 !$omp parallel do simd private(IX)
 #endif
-                          DO 30 I = 1,J - 1
-                              IX = IX0 + (I-1)*INCX
+!                          DO 30 I = 1,J - 1
+                          DO 30 I = Istart,Iend
+                              IX = IX0 + (I-Istart)*INCX
                               X(IX) = X(IX) + TEMP*A(I,J)
    30                     CONTINUE
+                          IX = IX0 + (Iend-Istart+1)*INCX
+
                           IF (NOUNIT) X(JX) = X(JX)*A(J,J)
                       END IF
                       JX = JX + INCX
@@ -321,6 +326,8 @@
                               IX = IX0 - (Iend-I)*INCX
                               X(IX) = X(IX) + TEMP*A(I,J)
    70                     CONTINUE
+                          IX = IX0 - (Iend-Istart+1)*INCX
+
                           IF (NOUNIT) X(JX) = X(JX)*A(J,J)
                       END IF
                       JX = JX - INCX
@@ -365,6 +372,8 @@
                           IX = IX0 - (Iend-I+1)*INCX
                           TEMP = TEMP + A(I,J)*X(IX)
   110                 CONTINUE
+                      IX = IX0 - (Iend-Istart+1)*INCX
+
                       X(JX) = TEMP
                       JX = JX - INCX
   120             CONTINUE
@@ -403,6 +412,8 @@
                           IX = IX0 + (I-Istart+1)*INCX
                           TEMP = TEMP + A(I,J)*X(IX)
   150                 CONTINUE
+                      IX = IX0 + (Iend-Istart+1)*INCX
+
                       X(JX) = TEMP
                       JX = JX + INCX
   160             CONTINUE
