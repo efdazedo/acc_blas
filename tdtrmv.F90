@@ -39,7 +39,7 @@
       n = nmax
       print*,'n,nmat,nthreads',n,nmat,nthreads
 
-      ldx = 3*nmat
+      ldx = 10*nmax
       allocate( A(nmax,nmax,nmat)) 
       allocate( X(ldx,nmat), x_cpu(ldx,nmat), x_acc(ldx,nmat))
       lda = size(A,1)
@@ -67,7 +67,7 @@
 !$acc kernels  present(A)
 !$acc loop independent gang 
       do imat=1,nmat
-        call dtrmv_acc(uplo,trans,diag,n,A(:,:,imat),lda,                &
+         call dtrmv_acc(uplo,trans,diag,n,A(:,:,imat),lda,                &
      &                 x_cpu(:,imat),incx)
       enddo
 !$acc end kernels
@@ -81,9 +81,11 @@
       enddo
 
       maxerr = maxval( abs(x_cpu - x_acc) )
-      isok = (maxerr < tol * maxval(abs(x_cpu)) )
+      isok = (maxerr <= tol * maxval(abs(x_cpu)) )
       if (.not.isok) then
               nerrors=nerrors + 1
+              print*,'uplo,trans,diag,incx,maxerr:',                     &
+     &                uplo,trans,diag,incx,maxerr
       endif
 
       enddo
