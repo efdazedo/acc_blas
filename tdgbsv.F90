@@ -25,8 +25,8 @@
       real*8, allocatable :: AB_org(:,:,:)
       character :: trans
 
-      nmat = 1
-      nrhs = 1
+      nmat = 16
+      nrhs = 8
       m = 40
       kl = m
       ku = m
