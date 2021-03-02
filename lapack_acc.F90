@@ -83,4 +83,8 @@
 #include "lapack/dgeqr2.f"
 #include "lapack/dgeqrf.f"
 
+
+
+#include "lapack/dgbsv_strided_batched.F90"
+
        end module lapack_acc
