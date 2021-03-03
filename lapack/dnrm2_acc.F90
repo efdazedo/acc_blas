@@ -12,10 +12,10 @@
       real*8 :: dsum
 
       dsum = 0
-#ifdef _OPENMP
-!$acc loop vector private(ix)
+#ifdef _OPENACC
+!$acc loop vector private(ix) reduction(+:dsum)
 #else
-!$omp parallel do simd private(ix)
+!$omp parallel do simd private(ix) reduction(+:dsum)
 #endif
       do i=1,n
         ix = 1 + (i-1)*incx
