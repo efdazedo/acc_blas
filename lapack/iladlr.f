@@ -114,7 +114,7 @@
       ELSE
 !     Scan up each column tracking the last zero row seen.
          ILADLR = 0
-#ifdef _OPENMP
+#ifdef _OPENACC
 !$acc loop vector private(I) reduction(max:ILADLR)
 #else
 !$omp parallel do simd private(I) reduction(max:ILADLR)
