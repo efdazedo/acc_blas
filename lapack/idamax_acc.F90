@@ -12,6 +12,10 @@
       integer :: i,ix,ipos
       real*8 :: dx_max
 
+      if (n <= 0) then
+              return
+      endif
+
       dx_max = abs(dx(1))
 #ifdef _OPENACC
 !$acc loop vector private(ix) reduction(max:dx_max)
