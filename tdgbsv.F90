@@ -2,14 +2,17 @@
 #define OMP_TARGET
 #endif
       program tdgbsv
-#ifdef _OPENACC
-      use lapack_acc, only : dgbsv_acc => dgbsv, dgbmv_acc => dgbmv
-#elif defined(OMP_TARGET)
-      use lapack_acc, only : dgbsv_acc => dgbsv, dgbmv_acc => dgbmv
+
+#if  defined(OMP_TARGET) || defined(_OPENACC)
+      use lapack_acc, only : dgbsv_acc => dgbsv, dgbmv_acc => dgbmv,     &
+     &     dgbsv_strided_batched
 #else
       use lapack_mod, only : dgbsv_acc => dgbsv, dgbmv_acc => dgbmv
 #endif
+      use iso_c_binding
       implicit none
+
+      integer(kind=c_long) :: strideAB, strideB
 
       integer :: tstart,tend,count_rate
       real*8 :: ttime
@@ -111,7 +114,20 @@
       B_org = B
       
 
+
       call system_clock(tstart,count_rate)
+#if defined(_OPENACC) || defined(OMP_TARGET)
+        strideAB = size(AB,1)
+        strideAB = strideAB * size(AB,2)
+        strideB = size(B,1)
+        strideB = strideB * size(B,2)
+        call dgbsv_strided_batched(n,kl,ku,nrhs,AB,ldab,strideAB,        &
+     &         ipiv,B,ldb,strideB,info,nmat)
+        print*,'dgbsv_strided_batched used '
+#else
+
+
+
 #ifdef _OPENACC
 !$acc kernels
 !$acc loop independent gang 
@@ -136,6 +152,10 @@
 #else
 !$omp end parallel
 !$omp barrier
+#endif
+
+
+
 #endif
       call system_clock(tend,count_rate)
 

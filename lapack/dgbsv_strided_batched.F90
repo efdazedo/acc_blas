@@ -1,5 +1,5 @@
       subroutine dgbsv_strided_batched( n, kl, ku, nrhs, pAB, ldab,      &
-     &   strideAB, ipiv, pB, ldb, strideB, batchCount, info)             &
+     &   strideAB, ipiv, pB, ldb, strideB, info, batchCount )            &
      &   bind(C,name='dgbsv_strided_batched')
       use iso_c_binding
       implicit none
@@ -14,7 +14,7 @@
 #ifdef _OPENACC
 !$acc kernels
 !$acc loop independent gang
-#elif USE_OMP_TARGET
+#elif defined(OMP_TARGET)
 !$omp target teams
 !$omp distribute
 #else
