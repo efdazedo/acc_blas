@@ -29,7 +29,7 @@
 
 #ifdef _OPENACC
 !$acc end kernels
-#elif USE_OMP_TARGET
+#elif OMP_TARGET
 !$omp end target teams
 #else
 !$omp end parallel
