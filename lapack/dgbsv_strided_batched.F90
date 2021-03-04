@@ -6,9 +6,9 @@
       integer(c_int), value :: n,kl,ku,nrhs,ldab,ldb,batchCount
       integer(c_long), value :: strideAB, strideB
       integer(c_int) :: info(batchCount)
-      integer(c_int) :: ipiv(*)
-      real(c_double) :: pAB(*)
-      real(c_double) :: pB(*)
+      integer(c_int) :: ipiv(n*batchCount)
+      real(c_double) :: pAB( (batchCount-1)*strideAB + (ldab*n) )
+      real(c_double) :: pB( (batchCount-1)*strideB + (ldb*nrhs) )
 
       integer :: ibatch
 #ifdef _OPENACC
