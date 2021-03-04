@@ -312,7 +312,7 @@
 !
 !              C1 := C1 - W**T
 !
-#ifdef _OPENMP
+#ifdef _OPENACC
 !$acc loop vector collapse(2)
 #else
 !$omp parallel do simd collapse(2)
@@ -371,7 +371,7 @@
 !
 !              C1 := C1 - W
 !
-#ifdef _OPENMP
+#ifdef _OPENACC
 !$acc loop vector collapse(2)
 #else
 !$omp parallel do simd collapse(2)
@@ -436,7 +436,7 @@
 !
 !              C2 := C2 - W**T
 !
-#ifdef _OPENMP
+#ifdef _OPENACC
 !$acc loop vector collapse(2)
 #else
 !$omp parallel do simd collapse(2)
@@ -493,7 +493,7 @@
 !
 !              C2 := C2 - W
 !
-#ifdef _OPENMP
+#ifdef _OPENACC
 !$acc loop vector collapse(2)
 #else
 !$omp parallel do simd collapse(2)
@@ -562,7 +562,7 @@
 !
 !              C1 := C1 - W**T
 !
-#ifdef _OPENMP
+#ifdef _OPENACC
 !$acc loop vector collapse(2)
 #else
 !$omp parallel do simd collapse(2)
@@ -621,7 +621,7 @@
 !
 !              C1 := C1 - W
 !
-#ifdef _OPENMP
+#ifdef _OPENACC
 !$acc loop vector collapse(2)
 #else
 !$omp parallel do simd collapse(2)
@@ -686,7 +686,7 @@
 !
 !              C2 := C2 - W**T
 !
-#ifdef _OPENMP
+#ifdef _OPENACC
 !$acc loop vector collapse(2)
 #else
 !$omp parallel do simd collapse(2)
@@ -743,7 +743,7 @@
 !
 !              C1 := C1 - W
 !
-#ifdef _OPENMP
+#ifdef _OPENACC
 !$acc loop vector collapse(2)
 #else
 !$omp parallel do simd collapse(2)

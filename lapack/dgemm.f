@@ -186,7 +186,11 @@
 !>
 !  =====================================================================
       SUBROUTINE DGEMM(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
+#ifdef _OPENACC
 !$acc routine vector
+#else
+!$omp declare target
+#endif
 !
 !  -- Reference BLAS level3 routine (version 3.7.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -294,14 +298,22 @@
 !
       IF (ALPHA.EQ.ZERO) THEN
           IF (BETA.EQ.ZERO) THEN
+#ifdef _OPENACC
 !$acc loop vector collapse(2) 
+#else
+!$omp parallel do simd collapse(2) 
+#endif
               DO J = 1,N
               DO I = 1,M
                       C(I,J) = ZERO
               ENDDO
               ENDDO
           ELSE
+#ifdef _OPENACC
 !$acc loop vector collapse(2) 
+#else
+!$omp parallel do simd collapse(2) 
+#endif
               DO J = 1,N
               DO I = 1,M
                       C(I,J) = BETA*C(I,J)
@@ -319,14 +331,22 @@
 !           Form  C := alpha*A*B + beta*C.
 !
                   IF (BETA.EQ.ZERO) THEN
+#ifdef _OPENACC
 !$acc loop vector collapse(2) 
+#else
+!$omp parallel do simd collapse(2) 
+#endif
                       DO J = 1,N
                       DO I = 1,M
                           C(I,J) = ZERO
                       ENDDO
                       ENDDO
                   ELSE IF (BETA.NE.ONE) THEN
+#ifdef _OPENACC
 !$acc loop vector collapse(2) 
+#else
+!$omp parallel do simd collapse(2) 
+#endif
                       DO  J = 1,N
                       DO  I = 1,M
                           C(I,J) = BETA*C(I,J)
@@ -334,7 +354,11 @@
                       ENDDO
                   END IF
 
+#ifdef _OPENACC
 !$acc loop vector collapse(2) private(L,TEMP)
+#else
+!$omp parallel do simd collapse(2) private(L,TEMP)
+#endif
                   do J=1,N
                   do I=1,M
                     TEMP = ZERO
@@ -349,7 +373,11 @@
 !
 !           Form  C := alpha*A**T*B + beta*C
 !
+#ifdef _OPENACC
 !$acc loop  vector collapse(2) private(L,TEMP)
+#else
+!$omp parallel do simd collapse(2) private(L,TEMP)
+#endif
               DO J = 1,N
               DO I = 1,M
                       TEMP = ZERO
@@ -370,14 +398,22 @@
 !           Form  C := alpha*A*B**T + beta*C
 !
                   IF (BETA.EQ.ZERO) THEN
+#ifdef _OPENACC
 !$acc loop vector collapse(2) 
+#else
+!$omp parallel do simd collapse(2) 
+#endif
                       DO J = 1,N
                       DO I = 1,M
                           C(I,J) = ZERO
                       ENDDO
                       ENDDO
                   ELSE IF (BETA.NE.ONE) THEN
+#ifdef _OPENACC
 !$acc loop vector collapse(2) 
+#else
+!$omp parallel do simd collapse(2) 
+#endif
                       DO J = 1,N
                       DO I = 1,M
                           C(I,J) = BETA*C(I,J)
@@ -385,7 +421,11 @@
                       ENDDO
                   END IF
 
+#ifdef _OPENACC
 !$acc loop vector collapse(2) private(L,TEMP)
+#else
+!$omp parallel do simd collapse(2) private(L,TEMP)
+#endif
                   do J=1,N
                   do I=1,M
                      TEMP = ZERO
@@ -399,7 +439,11 @@
 !
 !           Form  C := alpha*A**T*B**T + beta*C
 !
+#ifdef _OPENACC
 !$acc loop  vector collapse(2) private(L,TEMP)
+#else
+!$omp parallel do simd collapse(2) private(L,TEMP)
+#endif
               DO J = 1,N
               DO I = 1,M
                       TEMP = ZERO

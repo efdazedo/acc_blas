@@ -218,7 +218,7 @@
 !
 !              H(i)  =  I
 !
-#ifdef _OPENMP
+#ifdef _OPENACC
 !$acc loop vector
 #else
 !$omp parallel do simd
@@ -235,7 +235,7 @@
                   DO LASTV = N, I+1, -1
                      IF( V( LASTV, I ).NE.ZERO ) EXIT
                   END DO
-#ifdef _OPENMP
+#ifdef _OPENACC
 !$acc loop vector
 #else
 !$omp parallel do simd
@@ -255,7 +255,7 @@
                   DO LASTV = N, I+1, -1
                      IF( V( I, LASTV ).NE.ZERO ) EXIT
                   END DO
-#ifdef _OPENMP
+#ifdef _OPENACC
 !$acc loop vector
 #else
 !$omp parallel do simd
@@ -291,7 +291,7 @@
 !
 !              H(i)  =  I
 !
-#ifdef _OPENMP
+#ifdef _OPENACC
 !$acc loop vector
 #else
 !$omp parallel do simd
@@ -309,7 +309,7 @@
                      DO LASTV = 1, I-1
                         IF( V( LASTV, I ).NE.ZERO ) EXIT
                      END DO
-#ifdef _OPENMP
+#ifdef _OPENACC
 !$acc loop vector
 #else
 !$omp parallel do simd
@@ -329,7 +329,7 @@
                      DO LASTV = 1, I-1
                         IF( V( I, LASTV ).NE.ZERO ) EXIT
                      END DO
-#ifdef _OPENMP
+#ifdef _OPENACC
 !$acc loop vector
 #else
 !$omp parallel do simd

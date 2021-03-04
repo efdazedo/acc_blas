@@ -70,7 +70,11 @@
 !>
 !  =====================================================================
       INTEGER FUNCTION IDAMAX(N,DX,INCX)
+#ifdef _OPENACC
 !$acc routine vector 
+#else
+!$omp declare target
+#endif
 !
 !  -- Reference BLAS level1 routine (version 3.8.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
