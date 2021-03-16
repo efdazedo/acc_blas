@@ -178,7 +178,7 @@
 #endif
       logical :: is_diag_N, is_diag_U
       logical :: is_uplo_L, is_uplo_U
-      logical :: is_trans_C, is_trans_T, is_trans_L
+      logical :: is_trans_C, is_trans_T, is_trans_N
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          MAX
