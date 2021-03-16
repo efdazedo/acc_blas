@@ -3,6 +3,7 @@
 #endif
 
       program tdgesv
+      implicit none
 #if defined(_OPENACC)
       use lapack_acc, only :                                             &
      &  dgesv_par => dgesv,                                               &
@@ -19,7 +20,6 @@
 
 
 
-      implicit none
 
       integer :: tstart,tend,count_rate
       real*8 :: ttime
