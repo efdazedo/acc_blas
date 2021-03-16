@@ -12,6 +12,7 @@
 !#include "lapack/tolower.f"
 !#include "lapack/fake_lsame.f"
 
+
 !#include "lapack/dgemm.f"
 #include "lapack/dgemm_acc.F90"
 
@@ -36,7 +37,6 @@
 
 !#include "lapack/dnrm2.f"
 #include "lapack/dnrm2_acc.F90"
-
 
 
 !#include "lapack/dger.f"
@@ -67,6 +67,9 @@
 #include "lapack/dgetrf.f"
 #include "lapack/dgesv.f"
 
+
+
+
 #include "lapack/dlamch.f"
 #include "lapack/dlaisnan.f"
 #include "lapack/disnan.f"
@@ -80,9 +83,17 @@
 #include "lapack/dlarfb.f"
 #include "lapack/dlarft.f"
 
+
+#include "lapack/dlaset.f"
+#include "lapack/dlascl.f"
+#include "lapack/dlassq.f"
+#include "lapack/dlange.f"
+#include "lapack/dtrtrs.f"
+
 #include "lapack/dgeqr2.f"
 #include "lapack/dgeqrf.f"
 
+#include "lapack/dgels.f"
 
 
 #include "lapack/dgbsv_strided_batched.F90"
