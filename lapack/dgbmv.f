@@ -183,12 +183,8 @@
 !> \endverbatim
 !>
 !  =====================================================================
-      SUBROUTINE DGBMV(TRANS,M,N,KL,KU,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
-#ifdef _OPENACC
-!$acc routine vector
-#else
-!$omp declare target
-#endif
+      SUBROUTINE DGBMV(TRANS,M,N,KL,KU,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)   &
+     & bind(C,name='dgbmv')
 !
 !  -- Reference BLAS level2 routine (version 3.7.0) --
 !  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
@@ -196,13 +192,21 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      DOUBLE PRECISION, intent(in) ::  ALPHA,BETA
-      INTEGER, intent(in) ::  INCX,INCY,KL,KU,LDA,M,N
-      CHARACTER, intent(in) ::  TRANS
+      use iso_c_binding
+      implicit none
+#ifdef _OPENACC
+!$acc routine vector
+#else
+!$omp declare target
+#endif
+
+      real(c_double) , value ::  ALPHA,BETA
+      integer(c_int), value ::  INCX,INCY,KL,KU,LDA,M,N
+      CHARACTER(kind=c_char), value ::  TRANS
 !     ..
 !     .. Array Arguments ..
-      DOUBLE PRECISION, intent(in) ::  A(LDA,*),X(*)
-      DOUBLE PRECISION, intent(inout) ::  Y(*)
+      real(c_double) ::  A(LDA,*),X(*)
+      real(c_double) ::  Y(*)
 !     ..
 !
 !  =====================================================================
