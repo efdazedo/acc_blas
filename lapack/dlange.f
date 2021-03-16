@@ -113,6 +113,13 @@
 !
 !  =====================================================================
       DOUBLE PRECISION FUNCTION DLANGE( NORM, M, N, A, LDA, WORK )
+      implicit none
+
+#ifdef _OPENACC
+!$acc routine vector 
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK auxiliary routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -136,6 +143,7 @@
 !     .. Local Scalars ..
       INTEGER            I, J
       DOUBLE PRECISION   SCALE, SUM, VALUE, TEMP
+#if (0)
 !     ..
 !     .. External Subroutines ..
       EXTERNAL           DLASSQ
@@ -143,55 +151,115 @@
 !     .. External Functions ..
       LOGICAL            LSAME, DISNAN
       EXTERNAL           LSAME, DISNAN
+#endif
+      logical :: is_norm_M, is_norm_O, is_norm_I
+      logical :: is_norm_E, is_norm_F
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          ABS, MIN, SQRT
 !     ..
 !     .. Executable Statements ..
 !
+      is_norm_M = (NORM.eq.'M').or.(NORM.eq.'m')
+      is_norm_O = (NORM.eq.'O').or.(NORM.eq.'o')
+      is_norm_I = (NORM.eq.'I').or.(NORM.eq.'i')
+      is_norm_E = (NORM.eq.'E').or.(NORM.eq.'e')
+      is_norm_F = (NORM.eq.'F').or.(NORM.eq.'f')
+
+
       IF( MIN( M, N ).EQ.0 ) THEN
          VALUE = ZERO
-      ELSE IF( LSAME( NORM, 'M' ) ) THEN
+      ELSE IF( is_norm_M ) THEN
 !
 !        Find max(abs(A(i,j))).
 !
          VALUE = ZERO
+#ifdef _OPENACC
+!$acc  loop vector                                                       &
+!$acc& collapse(2) private(TEMP) reduction(max:VALUE)
+#else
+!$omp  parallel do simd                                                  &
+!$omp& collapse(2) private(TEMP) reduction(max:VALUE)
+#endif
          DO 20 J = 1, N
             DO 10 I = 1, M
                TEMP = ABS( A( I, J ) )
                IF( VALUE.LT.TEMP .OR. DISNAN( TEMP ) ) VALUE = TEMP
    10       CONTINUE
    20    CONTINUE
-      ELSE IF( ( LSAME( NORM, 'O' ) ) .OR. ( NORM.EQ.'1' ) ) THEN
+      ELSE IF( ( is_norm_O ) .OR. ( NORM.EQ.'1' ) ) THEN
 !
 !        Find norm1(A).
 !
          VALUE = ZERO
+#ifdef _OPENACC
+!$acc loop vector private(SUM) reduction(max:VALUE)
+#else
+!$omp parallel do simd private(SUM) reduction(max:VALUE)
+#endif
          DO 40 J = 1, N
+
             SUM = ZERO
             DO 30 I = 1, M
                SUM = SUM + ABS( A( I, J ) )
    30       CONTINUE
+
             IF( VALUE.LT.SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    40    CONTINUE
-      ELSE IF( LSAME( NORM, 'I' ) ) THEN
+      ELSE IF( is_norm_I ) THEN
 !
 !        Find normI(A).
 !
+
+#ifdef _OPENACC
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
          DO 50 I = 1, M
             WORK( I ) = ZERO
    50    CONTINUE
+
+
          DO 70 J = 1, N
+#ifdef _OPENACC
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
             DO 60 I = 1, M
                WORK( I ) = WORK( I ) + ABS( A( I, J ) )
    60       CONTINUE
    70    CONTINUE
+
          VALUE = ZERO
+
+#ifdef _OPENACC
+!$acc loop vector private(TEMP) reduction(max:VALUE)
+#else
+!$omp parallel do simd private(TEMP) reduction(max:VALUE)
+#endif
          DO 80 I = 1, M
             TEMP = WORK( I )
             IF( VALUE.LT.TEMP .OR. DISNAN( TEMP ) ) VALUE = TEMP
    80    CONTINUE
-      ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN
+      ELSE IF( ( is_norm_F ) .OR. ( is_norm_E ) ) THEN
+#if defined(OMP_TARGET) || defined(_OPENACC)
+      VALUE = ZERO
+
+
+#ifdef _OPENACC
+!$acc loop vector collapse(2) reduction(+:VALUE)
+#else
+!$omp parallel do simd collapse(2) reduction(+:VALUE)
+#endif
+      do j=1,N
+      do i=1,M
+        VALUE = VALUE + abs(A(I,J))**2
+      enddo
+      enddo
+      VALUE = sqrt( VALUE )
+#else
 !
 !        Find normF(A).
 !
@@ -201,6 +269,7 @@
             CALL DLASSQ( M, A( 1, J ), 1, SCALE, SUM )
    90    CONTINUE
          VALUE = SCALE*SQRT( SUM )
+#endif
       END IF
 !
       DLANGE = VALUE

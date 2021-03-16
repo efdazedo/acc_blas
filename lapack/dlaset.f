@@ -109,6 +109,12 @@
 !
 !  =====================================================================
       SUBROUTINE DLASET( UPLO, M, N, ALPHA, BETA, A, LDA )
+      implicit none
+#ifdef _OPENACC
+!$acc routine vector 
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK auxiliary routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -128,33 +134,50 @@
 !
 !     .. Local Scalars ..
       INTEGER            I, J
+#if (0)
 !     ..
 !     .. External Functions ..
       LOGICAL            LSAME
       EXTERNAL           LSAME
+#endif
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          MIN
 !     ..
 !     .. Executable Statements ..
 !
-      IF( LSAME( UPLO, 'U' ) ) THEN
+      logical :: is_uploU, is_uploL
+
+      is_uploU = (UPLO.eq.'U').or.(UPLO.eq.'u')
+      is_uploL = (UPLO.eq.'L').or.(UPLO.eq.'l')
+
+      IF( is_uploU ) then
 !
 !        Set the strictly upper triangular or trapezoidal part of the
 !        array to ALPHA.
 !
          DO 20 J = 2, N
+#ifdef _OPENACC
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
             DO 10 I = 1, MIN( J-1, M )
                A( I, J ) = ALPHA
    10       CONTINUE
    20    CONTINUE
 !
-      ELSE IF( LSAME( UPLO, 'L' ) ) THEN
+      ELSE IF( is_uploL ) then
 !
 !        Set the strictly lower triangular or trapezoidal part of the
 !        array to ALPHA.
 !
          DO 40 J = 1, MIN( M, N )
+#ifdef _OPENACC
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
             DO 30 I = J + 1, M
                A( I, J ) = ALPHA
    30       CONTINUE
@@ -164,6 +187,11 @@
 !
 !        Set the leading m-by-n submatrix to ALPHA.
 !
+#ifdef _OPENACC
+!$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
          DO 60 J = 1, N
             DO 50 I = 1, M
                A( I, J ) = ALPHA
@@ -173,6 +201,11 @@
 !
 !     Set the first min(M,N) diagonal elements to BETA.
 !
+#ifdef _OPENACC
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
       DO 70 I = 1, MIN( M, N )
          A( I, I ) = BETA
    70 CONTINUE

@@ -182,7 +182,11 @@
 !  =====================================================================
       SUBROUTINE DGELS( TRANS, M, N, NRHS, A, LDA, B, LDB, WORK, LWORK,
      $                  INFO )
-!$acc routine vector
+#ifdef _OPENACC
+!$acc routine vector 
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK driver routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -192,7 +196,7 @@
 !     .. Scalar Arguments ..
       CHARACTER,intent(in) ::          TRANS
       INTEGER,intent(in) ::            LDA, LDB, LWORK, M, N, NRHS
-      INTEGER,intent(inout) ::         INFO, 
+      INTEGER,intent(inout) ::         INFO  
 !     ..
 !     .. Array Arguments ..
       DOUBLE PRECISION,intent(inout)::   A( LDA, * )
@@ -232,10 +236,14 @@
 !
 !     Test the input arguments.
 !
+      logical :: is_trans_N, is_trans_T
+      is_trans_N = (TRANS.eq.'N').or.(TRANS.eq.'n')
+      is_trans_T = (TRANS.eq.'T').or.(TRANS.eq.'t')
+
       INFO = 0
       MN = MIN( M, N )
       LQUERY = ( LWORK.EQ.-1 )
-      IF( .NOT.( LSAME( TRANS, 'N' ) .OR. LSAME( TRANS, 'T' ) ) ) THEN
+      IF( .NOT.( is_trans_N .OR. is_trans_T ) ) THEN
          INFO = -1
       ELSE IF( M.LT.0 ) THEN
          INFO = -2
@@ -257,26 +265,22 @@
       IF( INFO.EQ.0 .OR. INFO.EQ.-10 ) THEN
 !
          TPSD = .TRUE.
-         IF( LSAME( TRANS, 'N' ) )
+         IF( is_trans_N )
      $      TPSD = .FALSE.
 !
          IF( M.GE.N ) THEN
             NB = ILAENV( 1, 'DGEQRF', ' ', M, N, -1, -1 )
             IF( TPSD ) THEN
-               NB = MAX( NB, ILAENV( 1, 'DORMQR', 'LN', M, NRHS, N,
-     $              -1 ) )
+               NB = MAX( NB,ILAENV(1,'DORMQR','LN',M,NRHS,N,-1) )
             ELSE
-               NB = MAX( NB, ILAENV( 1, 'DORMQR', 'LT', M, NRHS, N,
-     $              -1 ) )
+               NB = MAX( NB,ILAENV( 1,'DORMQR','LT',M,NRHS,N,-1 ) )
             END IF
          ELSE
             NB = ILAENV( 1, 'DGELQF', ' ', M, N, -1, -1 )
             IF( TPSD ) THEN
-               NB = MAX( NB, ILAENV( 1, 'DORMLQ', 'LT', N, NRHS, M,
-     $              -1 ) )
+               NB = MAX( NB,ILAENV( 1,'DORMLQ','LT',N,NRHS,M,-1 ) )
             ELSE
-               NB = MAX( NB, ILAENV( 1, 'DORMLQ', 'LN', N, NRHS, M,
-     $              -1 ) )
+               NB = MAX( NB,ILAENV( 1,'DORMLQ','LN',N,NRHS,M,-1 ) )
             END IF
          END IF
 !

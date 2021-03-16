@@ -142,6 +142,12 @@
 !
 !  =====================================================================
       SUBROUTINE DLASCL( TYPE, KL, KU, CFROM, CTO, M, N, A, LDA, INFO )
+      implicit none
+#ifdef _OPENACC
+!$acc routine vector 
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK auxiliary routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -167,17 +173,22 @@
       LOGICAL            DONE
       INTEGER            I, ITYPE, J, K1, K2, K3, K4
       DOUBLE PRECISION   BIGNUM, CFROM1, CFROMC, CTO1, CTOC, MUL, SMLNUM
+#if (0)
 !     ..
 !     .. External Functions ..
       LOGICAL            LSAME, DISNAN
       DOUBLE PRECISION   DLAMCH
       EXTERNAL           LSAME, DLAMCH, DISNAN
+!     .. External Subroutines ..
+      EXTERNAL           XERBLA
+#endif
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, MIN
+      logical :: is_type_G, is_type_L, is_type_U
+      logical :: is_type_H, is_type_B, is_type_Q
+      logical :: is_type_Z
 !     ..
-!     .. External Subroutines ..
-      EXTERNAL           XERBLA
 !     ..
 !     .. Executable Statements ..
 !
@@ -185,19 +196,28 @@
 !
       INFO = 0
 !
-      IF( LSAME( TYPE, 'G' ) ) THEN
+      is_type_G = (TYPE.eq.'G').or.(TYPE.eq.'g')
+      is_type_L = (TYPE.eq.'L').or.(TYPE.eq.'l')
+      is_type_U = (TYPE.eq.'U').or.(TYPE.eq.'u')
+      is_type_H = (TYPE.eq.'H').or.(TYPE.eq.'h')
+      is_type_B = (TYPE.eq.'B').or.(TYPE.eq.'b')
+      is_type_Q = (TYPE.eq.'Q').or.(TYPE.eq.'q')
+      is_type_Z = (TYPE.eq.'Z').or.(TYPE.eq.'z')
+
+
+      IF( is_type_G ) THEN
          ITYPE = 0
-      ELSE IF( LSAME( TYPE, 'L' ) ) THEN
+      ELSE IF( is_type_L ) THEN
          ITYPE = 1
-      ELSE IF( LSAME( TYPE, 'U' ) ) THEN
+      ELSE IF( is_type_U ) THEN
          ITYPE = 2
-      ELSE IF( LSAME( TYPE, 'H' ) ) THEN
+      ELSE IF( is_type_H ) THEN
          ITYPE = 3
-      ELSE IF( LSAME( TYPE, 'B' ) ) THEN
+      ELSE IF( is_type_B ) THEN
          ITYPE = 4
-      ELSE IF( LSAME( TYPE, 'Q' ) ) THEN
+      ELSE IF( is_type_Q ) THEN
          ITYPE = 5
-      ELSE IF( LSAME( TYPE, 'Z' ) ) THEN
+      ELSE IF( is_type_Z ) THEN
          ITYPE = 6
       ELSE
          ITYPE = -1
@@ -282,6 +302,12 @@
 !
 !        Full matrix
 !
+
+#ifdef _OPENACC
+!$acc loop vector collapse(2)
+#else
+!$omp parallel do simd collapse(2)
+#endif
          DO 30 J = 1, N
             DO 20 I = 1, M
                A( I, J ) = A( I, J )*MUL
@@ -293,6 +319,12 @@
 !        Lower triangular matrix
 !
          DO 50 J = 1, N
+
+#ifdef _OPENACC
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
             DO 40 I = J, M
                A( I, J ) = A( I, J )*MUL
    40       CONTINUE
@@ -303,6 +335,11 @@
 !        Upper triangular matrix
 !
          DO 70 J = 1, N
+#ifdef _OPENACC
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
             DO 60 I = 1, MIN( J, M )
                A( I, J ) = A( I, J )*MUL
    60       CONTINUE
@@ -313,6 +350,12 @@
 !        Upper Hessenberg matrix
 !
          DO 90 J = 1, N
+
+#ifdef _OPENACC
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
             DO 80 I = 1, MIN( J+1, M )
                A( I, J ) = A( I, J )*MUL
    80       CONTINUE
@@ -325,6 +368,12 @@
          K3 = KL + 1
          K4 = N + 1
          DO 110 J = 1, N
+
+#ifdef _OPENACC
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
             DO 100 I = 1, MIN( K3, K4-J )
                A( I, J ) = A( I, J )*MUL
   100       CONTINUE
@@ -337,6 +386,12 @@
          K1 = KU + 2
          K3 = KU + 1
          DO 130 J = 1, N
+
+#ifdef _OPENACC
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
             DO 120 I = MAX( K1-J, 1 ), K3
                A( I, J ) = A( I, J )*MUL
   120       CONTINUE
@@ -351,6 +406,12 @@
          K3 = 2*KL + KU + 1
          K4 = KL + KU + 1 + M
          DO 150 J = 1, N
+
+#ifdef _OPENACC
+!$acc loop vector
+#else
+!$omp parallel do simd
+#endif
             DO 140 I = MAX( K1-J, K2 ), MIN( K3, K4-J )
                A( I, J ) = A( I, J )*MUL
   140       CONTINUE

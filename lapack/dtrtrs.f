@@ -139,6 +139,12 @@
 !  =====================================================================
       SUBROUTINE DTRTRS( UPLO, TRANS, DIAG, N, NRHS, A, LDA, B, LDB,
      $                   INFO )
+      implicit none
+#ifdef _OPENACC
+!$acc routine vector 
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK computational routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -161,6 +167,7 @@
 !     ..
 !     .. Local Scalars ..
       LOGICAL            NOUNIT
+#if (0)
 !     ..
 !     .. External Functions ..
       LOGICAL            LSAME
@@ -168,6 +175,10 @@
 !     ..
 !     .. External Subroutines ..
       EXTERNAL           DTRSM, XERBLA
+#endif
+      logical :: is_diag_N, is_diag_U
+      logical :: is_uplo_L, is_uplo_U
+      logical :: is_trans_C, is_trans_T, is_trans_L
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -176,14 +187,24 @@
 !
 !     Test the input parameters.
 !
+      is_diag_N = (DIAG.eq.'N').or.(DIAG.eq.'n')
+      is_diag_U = (DIAG.eq.'U').or.(DIAG.eq.'U')
+
+      is_uplo_U = (UPLO.eq.'U').or.(UPLO.eq.'u')
+      is_uplo_L = (UPLO.eq.'L').or.(UPLO.eq.'l')
+
+      is_trans_C = (TRANS.eq.'C').or.(trans.eq.'c')
+      is_trans_T = (TRANS.eq.'T').or.(trans.eq.'t')
+      is_trans_N = (TRANS.eq.'N').or.(trans.eq.'n')
+
       INFO = 0
-      NOUNIT = LSAME( DIAG, 'N' )
-      IF( .NOT.LSAME( UPLO, 'U' ) .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
+      NOUNIT = is_diag_N
+      IF( .NOT.is_uplo_U .AND. .NOT.is_uplo_L ) THEN
          INFO = -1
-      ELSE IF( .NOT.LSAME( TRANS, 'N' ) .AND. .NOT.
-     $         LSAME( TRANS, 'T' ) .AND. .NOT.LSAME( TRANS, 'C' ) ) THEN
+      ELSE IF( .NOT.is_trans_N .AND. .NOT.
+     $         is_trans_T .AND. .NOT.is_trans_C ) THEN
          INFO = -2
-      ELSE IF( .NOT.NOUNIT .AND. .NOT.LSAME( DIAG, 'U' ) ) THEN
+      ELSE IF( .NOT.NOUNIT .AND. .NOT.is_diag_U ) THEN
          INFO = -3
       ELSE IF( N.LT.0 ) THEN
          INFO = -4
@@ -223,4 +244,4 @@
 !
 !     End of DTRTRS
 !
-      END
+      END subroutine DTRTRS

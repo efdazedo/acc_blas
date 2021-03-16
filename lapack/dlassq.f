@@ -102,6 +102,12 @@
 !
 !  =====================================================================
       SUBROUTINE DLASSQ( N, X, INCX, SCALE, SUMSQ )
+      implicit none
+#ifdef _OPENACC
+!$acc routine seq 
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK auxiliary routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -125,10 +131,12 @@
 !     .. Local Scalars ..
       INTEGER            IX
       DOUBLE PRECISION   ABSXI
+#if (0)
 !     ..
 !     .. External Functions ..
       LOGICAL            DISNAN
       EXTERNAL           DISNAN
+#endif
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          ABS
