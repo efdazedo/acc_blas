@@ -74,7 +74,7 @@
 !  =====================================================================
       LOGICAL FUNCTION DLAISNAN( DIN1, DIN2 )
 #ifdef _OPENACC
-!$acc routine vector
+!$acc routine seq
 #else
 !$omp declare target
 #endif

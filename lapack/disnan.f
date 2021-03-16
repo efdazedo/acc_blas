@@ -59,7 +59,7 @@
 !  =====================================================================
       LOGICAL FUNCTION DISNAN( DIN )
 #ifdef _OPENACC
-!$acc routine vector
+!$acc routine seq
 #else
 !$omp declare target
 #endif
