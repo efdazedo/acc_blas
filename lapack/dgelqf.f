@@ -134,6 +134,13 @@
 !>
 !  =====================================================================
       SUBROUTINE DGELQF( M, N, A, LDA, TAU, WORK, LWORK, INFO )
+      implicit none
+
+#ifdef _OPENACC
+!$acc routine vector 
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK computational routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -153,16 +160,18 @@
       LOGICAL            LQUERY
       INTEGER            I, IB, IINFO, IWS, K, LDWORK, LWKOPT, NB,
      $                   NBMIN, NX
+#if (0)
 !     ..
 !     .. External Subroutines ..
       EXTERNAL           DGELQ2, DLARFB, DLARFT, XERBLA
 !     ..
-!     .. Intrinsic Functions ..
-      INTRINSIC          MAX, MIN
-!     ..
 !     .. External Functions ..
       INTEGER            ILAENV
       EXTERNAL           ILAENV
+#endif
+!     ..
+!     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN
 !     ..
 !     .. Executable Statements ..
 !
@@ -217,8 +226,7 @@
 !              determine the minimum value of NB.
 !
                NB = LWORK / LDWORK
-               NBMIN = MAX( 2, ILAENV( 2, 'DGELQF', ' ', M, N, -1,
-     $                 -1 ) )
+               NBMIN = MAX( 2,ILAENV( 2,'DGELQF',' ',M,N,-1,-1 ) )
             END IF
          END IF
       END IF
@@ -266,4 +274,4 @@
 !
 !     End of DGELQF
 !
-      END
+      END subroutine DGELQF

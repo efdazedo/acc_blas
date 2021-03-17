@@ -120,6 +120,13 @@
 !>
 !  =====================================================================
       SUBROUTINE DGELQ2( M, N, A, LDA, TAU, WORK, INFO )
+      implicit none
+
+#ifdef _OPENACC
+!$acc routine vector 
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK computational routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -142,9 +149,11 @@
 !     .. Local Scalars ..
       INTEGER            I, K
       DOUBLE PRECISION   AII
+#if (0)
 !     ..
 !     .. External Subroutines ..
       EXTERNAL           DLARF, DLARFG, XERBLA
+#endif
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -189,4 +198,4 @@
 !
 !     End of DGELQ2
 !
-      END
+      END subroutine DGELQ2

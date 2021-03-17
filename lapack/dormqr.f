@@ -167,7 +167,6 @@
       SUBROUTINE DORMQR( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC,
      $                   WORK, LWORK, INFO )
       implicit none
-
 #ifdef _OPENACC
 !$acc routine vector 
 #else
@@ -208,6 +207,8 @@
 !     .. External Subroutines ..
       EXTERNAL           DLARFB, DLARFT, DORM2R, XERBLA
 #endif
+      logical :: is_side_L, is_side_R
+      logical :: is_trans_N, is_trans_C, is_trans_T
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -285,8 +286,7 @@
       IF( NB.GT.1 .AND. NB.LT.K ) THEN
          IF( LWORK.LT.NW*NB+TSIZE ) THEN
             NB = (LWORK-TSIZE) / LDWORK
-            NBMIN = MAX( 2, ILAENV( 2, 'DORMQR', SIDE // TRANS, M, N, K,
-     $              -1 ) )
+            NBMIN = MAX( 2,ILAENV( 2,'DORMQR',SIDE // TRANS,M,N,K,-1 ) )
          END IF
       END IF
 !
@@ -354,4 +354,4 @@
 !
 !     End of DORMQR
 !
-      END
+      END subroutine DORMQR
