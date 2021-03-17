@@ -166,6 +166,13 @@
 !  =====================================================================
       SUBROUTINE DORMQR( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC,
      $                   WORK, LWORK, INFO )
+      implicit none
+
+#ifdef _OPENACC
+!$acc routine vector 
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK computational routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -191,6 +198,7 @@
       LOGICAL            LEFT, LQUERY, NOTRAN
       INTEGER            I, I1, I2, I3, IB, IC, IINFO, IWT, JC, LDWORK,
      $                   LWKOPT, MI, NB, NBMIN, NI, NQ, NW
+#if (0)
 !     ..
 !     .. External Functions ..
       LOGICAL            LSAME
@@ -199,6 +207,7 @@
 !     ..
 !     .. External Subroutines ..
       EXTERNAL           DLARFB, DLARFT, DORM2R, XERBLA
+#endif
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -207,9 +216,17 @@
 !
 !     Test the input arguments
 !
+
+      is_side_L = (SIDE.eq.'L').or.(SIDE.eq.'l')
+      is_side_R = (SIDE.eq.'R').or.(SIDE.eq.'r')
+
+      is_trans_N = (TRANS.eq.'N').or.(TRANS.eq.'n')
+      is_trans_T = (TRANS.eq.'T').or.(TRANS.eq.'t')
+      is_trans_C = (TRANS.eq.'C').or.(TRANS.eq.'c')
+
       INFO = 0
-      LEFT = LSAME( SIDE, 'L' )
-      NOTRAN = LSAME( TRANS, 'N' )
+      LEFT = is_side_L
+      NOTRAN = is_trans_N
       LQUERY = ( LWORK.EQ.-1 )
 !
 !     NQ is the order of Q and NW is the minimum dimension of WORK
@@ -221,9 +238,9 @@
          NQ = N
          NW = M
       END IF
-      IF( .NOT.LEFT .AND. .NOT.LSAME( SIDE, 'R' ) ) THEN
+      IF( .NOT.LEFT .AND. .NOT.is_side_R ) THEN
          INFO = -1
-      ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) ) THEN
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.is_trans_T ) THEN
          INFO = -2
       ELSE IF( M.LT.0 ) THEN
          INFO = -3

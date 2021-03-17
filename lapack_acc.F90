@@ -84,12 +84,14 @@
 #include "lapack/dlarft.f"
 
 
+#include "lapack/dorml2.f"
+#include "lapack/dlabad.f"
 #include "lapack/dlaset.f"
 #include "lapack/dlascl.f"
 #include "lapack/dlassq.f"
 #include "lapack/dlange.f"
 #include "lapack/dtrtrs.f"
-
+#include "lapack/dormlq.f"
 #include "lapack/dgeqr2.f"
 #include "lapack/dgeqrf.f"
 

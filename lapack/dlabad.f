@@ -73,6 +73,13 @@
 !
 !  =====================================================================
       SUBROUTINE DLABAD( SMALL, LARGE )
+      implicit none
+
+#ifdef _OPENACC
+!$acc routine seq 
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK auxiliary routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --

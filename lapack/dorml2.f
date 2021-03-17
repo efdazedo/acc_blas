@@ -158,6 +158,13 @@
 !  =====================================================================
       SUBROUTINE DORML2( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC,
      $                   WORK, INFO )
+      implicit none
+
+#ifdef _OPENACC
+!$acc routine vector 
+#else
+!$omp declare target
+#endif
 !
 !  -- LAPACK computational routine (version 3.7.0) --
 !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
@@ -182,6 +189,7 @@
       LOGICAL            LEFT, NOTRAN
       INTEGER            I, I1, I2, I3, IC, JC, MI, NI, NQ
       DOUBLE PRECISION   AII
+#if (0)
 !     ..
 !     .. External Functions ..
       LOGICAL            LSAME
@@ -189,6 +197,9 @@
 !     ..
 !     .. External Subroutines ..
       EXTERNAL           DLARF, XERBLA
+#endif
+      logical :: is_side_L, is_side_R
+      logical :: is_trans_N, is_trans_T, is_trans_C
 !     ..
 !     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -197,9 +208,17 @@
 !
 !     Test the input arguments
 !
+      is_side_L = (SIDE.eq.'L').or.(SIDE.eq.'l')
+      is_side_R = (SIDE.eq.'R').or.(SIDE.eq.'r')
+
+      is_trans_N = (TRANS.eq.'N').or.(trans.eq.'n')
+      is_trans_T = (TRANS.eq.'T').or.(trans.eq.'t')
+      is_trans_C = (TRANS.eq.'C').or.(trans.eq.'c')
+ 
+
       INFO = 0
-      LEFT = LSAME( SIDE, 'L' )
-      NOTRAN = LSAME( TRANS, 'N' )
+      LEFT = is_side_L
+      NOTRAN = is_trans_N
 !
 !     NQ is the order of Q
 !
@@ -208,9 +227,9 @@
       ELSE
          NQ = N
       END IF
-      IF( .NOT.LEFT .AND. .NOT.LSAME( SIDE, 'R' ) ) THEN
+      IF( .NOT.LEFT .AND. .NOT.is_side_R ) THEN
          INFO = -1
-      ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) ) THEN
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.is_trans_T ) THEN
          INFO = -2
       ELSE IF( M.LT.0 ) THEN
          INFO = -3
@@ -279,4 +298,4 @@
 !
 !     End of DORML2
 !
-      END
+      END subroutine DORML2
