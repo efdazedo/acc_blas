@@ -85,5 +85,27 @@
 
       end interface
 
+      interface
+      subroutine dgels(trans,m,n,nrhs,A,lda,B,ldb,work,lwork,info)
+      implicit none
+      character trans
+      integer m,n,nrhs,lda,ldb,lwork,info
+      real*8 A(lda,*),B(ldb,*),work(*)
+      end subroutine dgels
+
+      subroutine dgeqrf(m,n,A,lda,tau,work,lwork,info)
+      implicit none
+      integer m,n,lda,lwork,info
+      real*8 A(lda,*), tau(*), work(*)
+      end subroutine dgeqrf
+
+      subroutine dgelq(m,n,A,lda,tau,tsize,work,lwork,info)
+      implicit none
+      integer m,n,lda,tsize,lwork,info
+      real*8 A(lda,*),tau(*),work(*)
+      end subroutine dgelq
+
+      end interface
+
 
       end module lapack_mod
