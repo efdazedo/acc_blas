@@ -3,7 +3,6 @@
 #endif
 
       program tdgesv
-      implicit none
 #if defined(_OPENACC)
       use lapack_acc, only :                                             &
      &  dgesv_par => dgesv,                                               &
@@ -17,6 +16,7 @@
      &  dgesv_par => dgesv,                                               &
      &  dgemm_par => dgemm
 #endif
+      implicit none
 
 
 
@@ -36,7 +36,7 @@
       real*8, allocatable :: A_org(:,:,:), B_org(:,:,:)
       integer, allocatable :: info(:), ipiv(:,:)
 
-      nmat = 64
+      nmat = 8
       nrhs = 8
       m = 40
       n = m*m
