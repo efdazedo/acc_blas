@@ -123,6 +123,7 @@
 !
 !  =====================================================================
       SUBROUTINE DLARF( SIDE, M, N, V, INCV, TAU, C, LDC, WORK )
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else

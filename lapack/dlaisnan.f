@@ -73,6 +73,7 @@
 !
 !  =====================================================================
       LOGICAL FUNCTION DLAISNAN( DIN1, DIN2 )
+      implicit none
 #ifdef _OPENACC
 !$acc routine seq
 #else

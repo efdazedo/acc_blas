@@ -114,7 +114,6 @@
 !  =====================================================================
       DOUBLE PRECISION FUNCTION DLANGE( NORM, M, N, A, LDA, WORK )
       implicit none
-
 #ifdef _OPENACC
 !$acc routine vector 
 #else

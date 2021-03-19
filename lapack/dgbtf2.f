@@ -144,6 +144,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DGBTF2( M, N, KL, KU, AB, LDAB, IPIV, INFO )
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector 
 #else

@@ -62,6 +62,7 @@
 !
 !  =====================================================================
       DOUBLE PRECISION FUNCTION DLAPY2( X, Y )
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else

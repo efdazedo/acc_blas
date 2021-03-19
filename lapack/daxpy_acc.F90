@@ -1,10 +1,10 @@
       subroutine daxpy(n,da,dx,incx,dy,incy)
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else
 !$omp declare target
 #endif
-      implicit none
       integer, intent(in) :: n,incx,incy
       real*8, intent(in) :: da
       real*8, intent(in) :: dx(*)

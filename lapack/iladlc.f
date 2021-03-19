@@ -77,6 +77,7 @@
 !
 !  =====================================================================
       INTEGER FUNCTION ILADLC( M, N, A, LDA )
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else

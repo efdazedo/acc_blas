@@ -74,7 +74,6 @@
 !  =====================================================================
       SUBROUTINE DLABAD( SMALL, LARGE )
       implicit none
-
 #ifdef _OPENACC
 !$acc routine seq 
 #else

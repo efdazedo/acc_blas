@@ -1,11 +1,11 @@
       integer function idamax(n,dx,incx)
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else
 !$omp declare target
 #endif
 
-      implicit none
       integer, intent(in) :: n, incx
       real*8, intent(in) :: dx(*)
 

@@ -105,6 +105,7 @@
 !
 !  =====================================================================
       SUBROUTINE DLARFG( N, ALPHA, X, INCX, TAU )
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else

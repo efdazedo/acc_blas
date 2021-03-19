@@ -135,6 +135,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DGEQRF( M, N, A, LDA, TAU, WORK, LWORK, INFO )
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else

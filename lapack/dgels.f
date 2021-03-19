@@ -182,6 +182,7 @@
 !  =====================================================================
       SUBROUTINE DGELS( TRANS, M, N, NRHS, A, LDA, B, LDB, WORK, LWORK,
      $                  INFO )
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector 
 #else

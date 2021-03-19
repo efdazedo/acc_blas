@@ -158,7 +158,7 @@
 !  =====================================================================
       SUBROUTINE DORM2R( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC,
      $                   WORK, INFO )
-
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector 
 #else

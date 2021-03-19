@@ -1,35 +1,33 @@
         subroutine dger(m,n,alpha,x,incx,y,incy,A,lda)
+        implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else
 !$omp declare target
 #endif
-        implicit none
+! ---------------------------------------------
+! perform rank-1 update A = alpha * x * y' + A
+! ---------------------------------------------
         integer, intent(in) :: m,n,incx,incy,lda
         real*8, intent(in) :: alpha
         real*8, intent(in) :: x(*), y(*)
         real*8, intent(inout) :: A(lda,*)
 
-        integer :: i,j,ix,jy,ij
+        integer :: i,j
+        real*8 :: xi, yj
 
 
 #ifdef _OPENACC
-!$acc loop vector  private(i,j,ix,jy)
+!$acc loop vector  collapse(2) private(xi,yj)
 #else
-
-!$omp parallel do simd  private(i,j,ix,jy) 
-
+!$omp parallel do simd  collapse(2) private(xi,yj)
 #endif
-
-        do ij=1,n*m
-          ! ----------------
-          ! ij = i + (j-1)*m
-          ! ----------------
-          i = mod( (ij-1),m) + 1
-          j = int( (ij-i)/m) + 1
-          ix = 1 + (i-1)*incx
-          jy = 1 + (j-1)*incy
-          A(i,j) = A(i,j) + alpha * x(ix) * y(jy)
+        do j=1,n
+        do i=1,m
+          xi = x(1 + (i-1)*incx)
+          yj = y(1 + (j-1)*incy)
+          A(i,j) = A(i,j) + alpha * xi * yj
+        enddo
         enddo
 
         return

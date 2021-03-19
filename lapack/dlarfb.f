@@ -194,6 +194,7 @@
 !  =====================================================================
       SUBROUTINE DLARFB( SIDE, TRANS, DIRECT, STOREV, M, N, K, V, LDV,
      $                   T, LDT, C, LDC, WORK, LDWORK )
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else

@@ -161,6 +161,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DGBSV( N, KL, KU, NRHS, AB, LDAB, IPIV, B, LDB, INFO )
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else

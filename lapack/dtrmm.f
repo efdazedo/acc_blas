@@ -176,6 +176,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DTRMM(SIDE,UPLO,TRANSA,DIAG,M,N,ALPHA,A,LDA,B,LDB)
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else

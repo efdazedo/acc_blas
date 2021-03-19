@@ -1,10 +1,10 @@
       real*8 function ddot(n,dx,incx,dy,incy)
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else
 !$omp declare target
 #endif
-      implicit none
       integer, intent(in) :: n,incx,incy
       real*8, intent(in) :: dx(*), dy(*)
 

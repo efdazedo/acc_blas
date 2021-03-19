@@ -84,8 +84,8 @@
 
 
 #if defined(_OPENACC)
-!$acc kernels
-!$acc loop independent gang
+!$acc kernels  num_gangs(nmat) vector_length(128)
+!$acc loop independent gang 
 #elif defined(OMP_TARGET)
 !$omp target teams
 !$omp distribute
@@ -124,7 +124,7 @@
       info = 0
       call system_clock(tstart,count_rate)
 #if defined(_OPENACC)
-!$acc kernels
+!$acc kernels  num_gangs(nmat) vector_length(128)
 !$acc loop independent gang 
 #elif defined(OMP_TARGET)
 !$omp target teams

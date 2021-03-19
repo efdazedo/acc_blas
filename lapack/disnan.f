@@ -58,6 +58,7 @@
 !
 !  =====================================================================
       LOGICAL FUNCTION DISNAN( DIN )
+      implicit none
 #ifdef _OPENACC
 !$acc routine seq
 #else

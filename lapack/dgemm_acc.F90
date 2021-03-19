@@ -1,11 +1,11 @@
       subroutine dgemm(transA,transB,m,n,kk,                              &
      & alpha, A,lda, B,ldb, beta, C,ldc )
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else
 !$omp declare target
 #endif
-      implicit none
       character, intent(in) :: transA,transB
       integer, intent(in) :: m,n,kk,lda,ldb,ldc
       real*8, intent(in) :: alpha,beta

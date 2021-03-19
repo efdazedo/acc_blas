@@ -114,6 +114,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DLASWP( N, A, LDA, K1, K2, IPIV, INCX )
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else

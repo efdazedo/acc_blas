@@ -188,6 +188,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DTBSV(UPLO,TRANS,DIAG,N,K,A,LDA,X,INCX)
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else

@@ -121,7 +121,6 @@
 !  =====================================================================
       SUBROUTINE DGELQ2( M, N, A, LDA, TAU, WORK, INFO )
       implicit none
-
 #ifdef _OPENACC
 !$acc routine vector 
 #else

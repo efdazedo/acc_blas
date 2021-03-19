@@ -146,6 +146,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DTRMV(UPLO,TRANS,DIAG,N,A,LDA,X,INCX)
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else

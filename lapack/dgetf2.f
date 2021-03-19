@@ -1,4 +1,5 @@
       SUBROUTINE DGETF2( M, N, A, LDA, IPIV, INFO )
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else

@@ -162,6 +162,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DLARFT( DIRECT, STOREV, N, K, V, LDV, TAU, T, LDT )
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else

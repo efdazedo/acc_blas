@@ -78,6 +78,7 @@
 !>
 !  =====================================================================
       SUBROUTINE DSCAL(N,DA,DX,INCX)
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else

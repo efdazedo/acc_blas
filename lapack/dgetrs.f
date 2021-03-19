@@ -1,4 +1,5 @@
       SUBROUTINE DGETRS( TRANS, N, NRHS, A, LDA, IPIV, B, LDB, INFO )
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else

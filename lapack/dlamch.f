@@ -62,6 +62,7 @@
 !
 !  =====================================================================
       DOUBLE PRECISION FUNCTION DLAMCH( CMACH )
+      implicit none
 #ifdef _OPENACC
 !$acc routine vector
 #else
