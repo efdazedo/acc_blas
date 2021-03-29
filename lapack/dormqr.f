@@ -261,8 +261,7 @@
 !
 !        Compute the workspace requirements
 !
-         NB = MIN( NBMAX, ILAENV( 1, 'DORMQR', SIDE // TRANS, M, N, K,
-     $        -1 ) )
+         NB = MIN( NBMAX,ILAENV( 1,'DORMQR',SIDE // TRANS,M,N,K,-1 ) )
          LWKOPT = MAX( 1, NW )*NB + TSIZE
          WORK( 1 ) = LWKOPT
       END IF
