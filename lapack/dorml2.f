@@ -215,6 +215,9 @@
       is_trans_C = (TRANS.eq.'C').or.(trans.eq.'c')
  
 
+      JC = 0
+      IC = 0
+
       INFO = 0
       LEFT = is_side_L
       NOTRAN = is_trans_N

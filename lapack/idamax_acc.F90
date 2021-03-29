@@ -12,6 +12,7 @@
       integer :: i,ix,ipos
       real*8 :: dx_max
 
+      idamax = 0
       if (n <= 0) then
               return
       endif

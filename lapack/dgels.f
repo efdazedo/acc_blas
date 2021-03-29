@@ -241,6 +241,9 @@
       is_trans_N = (TRANS.eq.'N').or.(TRANS.eq.'n')
       is_trans_T = (TRANS.eq.'T').or.(TRANS.eq.'t')
 
+      TPSD = .TRUE.
+      WSIZE = 0
+
       INFO = 0
       MN = MIN( M, N )
       LQUERY = ( LWORK.EQ.-1 )

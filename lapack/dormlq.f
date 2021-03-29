@@ -225,6 +225,10 @@
       is_trans_T = (TRANS.eq.'T').or.(TRANS.eq.'t')
       is_trans_C = (TRANS.eq.'C').or.(TRANS.eq.'c')
 
+      NB = 0
+      IC = 0
+      JC = 0
+      LWKOPT = 0
 
       INFO = 0
       LEFT = is_side_L
