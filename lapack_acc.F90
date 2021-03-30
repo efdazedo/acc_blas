@@ -39,8 +39,8 @@
 #include "lapack/dnrm2_acc.F90"
 
 
-!#include "lapack/dger.f"
-#include "lapack/dger_acc.F90"
+#include "lapack/dger.f"
+!#include "lapack/dger_acc.F90"
 
 !#include "lapack/dgemv.f"
 #include "lapack/dgemv_acc.F90"
@@ -106,3 +106,10 @@
 #include "lapack/dgbsv_strided_batched.F90"
 
        end module lapack_acc
+
+#undef XERBLA
+#undef xerbla
+
+#undef ILAENV
+#undef ilaenv
+
