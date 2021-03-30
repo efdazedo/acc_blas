@@ -1,4 +1,7 @@
-      program tdgbsv
+      module test_dgbsv_mod
+      implicit none
+      contains
+      subroutine test_dgbsv(m,nrhs,nmat)
 
 #if  defined(OMP_TARGET) || defined(_OPENACC)
       use lapack_acc, only : dgbsv_acc => dgbsv, dgbmv_acc => dgbmv,     &
@@ -9,13 +12,13 @@
       use iso_c_binding
       implicit none
 
+      integer, intent(in) :: m,nrhs,nmat
       integer(kind=c_long) :: strideAB, strideB
 
       integer :: tstart,tend,count_rate
       real*8 :: ttime
       logical :: isok
-      integer :: m,nmat
-      integer :: kl,ku,n,nrhs,ldab,ldb,ldx,ioffset
+      integer :: kl,ku,n,ldab,ldb,ldx,ioffset
       integer :: nrowA,ncolA
       integer :: imat,irhs, inc1,inc2
       real*8 :: errX
@@ -24,10 +27,8 @@
       real*8, allocatable :: AB(:,:,:), B(:,:,:),X(:,:,:),B_org(:,:,:)
       real*8, allocatable :: AB_org(:,:,:)
       character :: trans
+      integer, parameter :: idebug = 0
 
-      nmat = 16
-      nrhs = 8
-      m = 40
       kl = m
       ku = m
       n = m * m
@@ -120,7 +121,9 @@
         strideB = strideB * size(B,2)
         call dgbsv_strided_batched(n,kl,ku,nrhs,AB,ldab,strideAB,        &
      &         ipiv,B,ldb,strideB,info,nmat)
-        print*,'dgbsv_strided_batched used '
+        if (idebug >= 1) then
+          print*,'dgbsv_strided_batched used '
+        endif
 #else
 
 
@@ -139,7 +142,9 @@
        call dgbsv_acc(n,kl,ku,nrhs,AB(1,1,imat),ldab,ipiv(1,imat),           &
      &            B(1,1,imat),ldb,info(imat))
       enddo
-      print*,'dgbsv_acc used '
+      if (idebug >= 1) then
+         print*,'dgbsv_acc used '
+      endif
 
 #ifdef _OPENACC
 !$acc end kernels
@@ -184,6 +189,34 @@
       errX = maxval( abs(X - B) )
       print*,'max diff in X ', maxval( abs(X-B) )
 
+
+      deallocate( AB, AB_org )
+      deallocate( X, B, B_org )
+      deallocate( ipiv, info )
+
+      return
+      end subroutine  test_dgbsv
+      end module test_dgbsv_mod
+
+      program tdgbsv
+      use test_dgbsv_mod
+      implicit none
+      integer :: m, nrhs, nmat
+      integer :: icase, ncase
+
+
+      m = 40
+      nrhs = 8
+      ncase = 7
+
+      nmat = 16
+      do icase=1,ncase
+         
+         print*,'m,nrhs,nmat ', m,nrhs,nmat
+         call test_dgbsv(m,nrhs,nmat)
+
+         nmat = 2*nmat
+      enddo
 
       stop
       end program tdgbsv
