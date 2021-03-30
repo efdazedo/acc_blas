@@ -127,7 +127,7 @@
 !     June 2017
 !
 !     .. Scalar Arguments ..
-      INTEGER            INCX, K1, K2, LDA, N
+      INTEGER,value ::            INCX, K1, K2, LDA, N
 !     ..
 !     .. Array Arguments ..
       INTEGER            IPIV( * )

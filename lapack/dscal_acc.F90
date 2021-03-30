@@ -5,8 +5,8 @@
 #else
 !$omp declare target
 #endif
-      integer, intent(in) :: n, incx
-      real*8, intent(in) :: da
+      integer, value :: n, incx
+      real*8, value :: da
       real*8, intent(inout) :: dx(*)
 
       integer :: i, ix

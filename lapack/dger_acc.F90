@@ -8,8 +8,8 @@
 ! ---------------------------------------------
 ! perform rank-1 update A = alpha * x * y' + A
 ! ---------------------------------------------
-        integer, intent(in) :: m,n,incx,incy,lda
-        real*8, intent(in) :: alpha
+        integer, value :: m,n,incx,incy,lda
+        real*8, value :: alpha
         real*8, intent(in) :: x(*), y(*)
         real*8, intent(inout) :: A(lda,*)
 

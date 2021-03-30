@@ -5,8 +5,8 @@
 !$omp declare target
 #endif
 !     .. Scalar Arguments ..
-      DOUBLE PRECISION,intent(in) ::    ALPHA
-      INTEGER, intent(in) ::            INCX, INCY, LDA, M, N
+      DOUBLE PRECISION, value ::    ALPHA
+      INTEGER, value ::            INCX, INCY, LDA, M, N
 !     .. Array Arguments ..
       DOUBLE PRECISION, intent(in)    ::   X( * ), Y( * )
       DOUBLE PRECISION, intent(inout) ::   A( LDA, * )
