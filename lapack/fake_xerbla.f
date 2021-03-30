@@ -6,6 +6,6 @@
 !$omp declare target
 #endif
        integer info
-       print*,'xerbla:' ,info
+       print*,'fake xerbla:' ,info
        return
        end subroutine fake_xerbla
