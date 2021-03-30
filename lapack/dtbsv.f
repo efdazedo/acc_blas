@@ -323,14 +323,16 @@
                           L = KPLUS1 - J
                           IF (NOUNIT) X(JX) = X(JX)/A(KPLUS1,J)
                           TEMP = X(JX)
+                          I0 = J-1
+                          IX0 = IX
 #ifdef _OPENACC
-!!$acc loop vector private(IX)
+!$acc loop vector private(IX)
 #else
-!!$omp parallel do simd private(IX)
+!$omp parallel do simd private(IX)
 #endif
-                          DO 30 I = J - 1,MAX(1,J-K),-1
+                          DO 30 I = I0,MAX(1,J-K),-1
+                              IX = IX0 + (I-I0)*INCX
                               X(IX) = X(IX) - TEMP*A(L+I,J)
-                              IX = IX - INCX
    30                     CONTINUE
                       END IF
                       JX = JX - INCX
