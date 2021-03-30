@@ -1,6 +1,3 @@
-#if _OPENMP >= 201511
-#define OMP_TARGET
-#endif
       program tdgbsv
 
 #if  defined(OMP_TARGET) || defined(_OPENACC)
@@ -139,8 +136,8 @@
 !$omp do
 #endif
       do imat=1,nmat
-       call dgbsv_acc(n,kl,ku,nrhs,AB(:,:,imat),ldab,ipiv(:,imat),           &
-     &            B(:,:,imat),ldb,info(imat))
+       call dgbsv_acc(n,kl,ku,nrhs,AB(1,1,imat),ldab,ipiv(1,imat),           &
+     &            B(1,1,imat),ldb,info(imat))
       enddo
       print*,'dgbsv_acc used '
 
