@@ -5,9 +5,9 @@
 !$omp declare target
 #endif
       implicit none
-      character, intent(in) :: trans
-      integer, intent(in) :: m,n,lda,incx,incy
-      real*8, intent(in) :: alpha,beta
+      character, value :: trans
+      integer, value :: m,n,lda,incx,incy
+      real*8, value :: alpha,beta
       real*8, intent(in) :: x(*)
       real*8, intent(inout) :: y(*)
       real*8, intent(in) :: A(lda,*)

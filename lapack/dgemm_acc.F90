@@ -6,9 +6,9 @@
 #else
 !$omp declare target
 #endif
-      character, intent(in) :: transA,transB
-      integer, intent(in) :: m,n,kk,lda,ldb,ldc
-      real*8, intent(in) :: alpha,beta
+      character, value :: transA,transB
+      integer, value :: m,n,kk,lda,ldb,ldc
+      real*8, value :: alpha,beta
       real*8, intent(in) :: A(lda,*), B(ldb,*)
       real*8, intent(inout) :: C(ldc,*)
 
