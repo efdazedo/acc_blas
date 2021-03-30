@@ -218,6 +218,7 @@
 !     .. Local Scalars ..
       DOUBLE PRECISION TEMP
       INTEGER I,INFO,IX,J,JX,KPLUS1,KX,L
+      integer I0,IX0
       LOGICAL NOUNIT
       logical :: is_UU,is_UL
       logical :: is_TN,is_TC,is_TT
@@ -323,9 +324,9 @@
                           IF (NOUNIT) X(JX) = X(JX)/A(KPLUS1,J)
                           TEMP = X(JX)
 #ifdef _OPENACC
-!$acc loop vector private(IX)
+!!$acc loop vector private(IX)
 #else
-!$omp parallel do simd private(IX)
+!!$omp parallel do simd private(IX)
 #endif
                           DO 30 I = J - 1,MAX(1,J-K),-1
                               X(IX) = X(IX) - TEMP*A(L+I,J)
@@ -362,9 +363,9 @@
                           IF (NOUNIT) X(JX) = X(JX)/A(1,J)
                           TEMP = X(JX)
 #ifdef _OPENACC
-!$acc loop vector private(IX)
+!!$acc loop vector private(IX)
 #else
-!$omp parallel do simd private(IX)
+!!$omp parallel do simd private(IX)
 #endif
                           DO 70 I = J + 1,MIN(N,J+K)
                               X(IX) = X(IX) - TEMP*A(L+I,J)
@@ -402,14 +403,16 @@
                       TEMP = X(JX)
                       IX = KX
                       L = KPLUS1 - J
+                      IX0 = IX
+                      I0 = MAX(1,J-K)
 #ifdef _OPENACC
-!$acc loop vector private(IX) reduction(+:temp)
+!!$acc loop vector private(IX) reduction(+:temp)
 #else
-!$omp parallel do simd private(IX) reduction(+:temp)
+!!$omp parallel do simd private(IX) reduction(+:temp)
 #endif
-                      DO 110 I = MAX(1,J-K),J - 1
+                      DO 110 I = I0,J - 1
+                          IX = IX0 + (I-I0)*INCX
                           TEMP = TEMP - A(L+I,J)*X(IX)
-                          IX = IX + INCX
   110                 CONTINUE
                       IF (NOUNIT) TEMP = TEMP/A(KPLUS1,J)
                       X(JX) = TEMP
@@ -441,9 +444,9 @@
                       IX = KX
                       L = 1 - J
 #ifdef _OPENACC
-!$acc loop vector private(IX) reduction(+:TEMP)
+!!$acc loop vector private(IX) reduction(+:TEMP)
 #else
-!$omp parallel do simd private(IX) reduction(+:TEMP)
+!!$omp parallel do simd private(IX) reduction(+:TEMP)
 #endif
                       DO 150 I = MIN(N,J+K),J + 1,-1
                           TEMP = TEMP - A(L+I,J)*X(IX)
