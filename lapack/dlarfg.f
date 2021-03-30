@@ -118,7 +118,7 @@
 !     November 2017
 !
 !     .. Scalar Arguments ..
-      INTEGER,intent(in) ::            INCX, N
+      INTEGER,value ::            INCX, N
       DOUBLE PRECISION, intent(inout) ::   ALPHA
       DOUBLE PRECISION, intent(inout) ::   TAU
 !     ..
