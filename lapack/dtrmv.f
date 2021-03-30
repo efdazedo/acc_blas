@@ -159,8 +159,8 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      INTEGER INCX,LDA,N
-      CHARACTER DIAG,TRANS,UPLO
+      INTEGER, value ::  INCX,LDA,N
+      CHARACTER, value ::  DIAG,TRANS,UPLO
 !     ..
 !     .. Array Arguments ..
       DOUBLE PRECISION A(LDA,*),X(*)

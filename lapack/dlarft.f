@@ -175,8 +175,8 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      CHARACTER,intent(in)::          DIRECT, STOREV
-      INTEGER,intent(in)::            K, LDT, LDV, N
+      CHARACTER,value::          DIRECT, STOREV
+      INTEGER,value::            K, LDT, LDV, N
 !     ..
 !     .. Array Arguments ..
       DOUBLE PRECISION,intent(inout)::   T( LDT, * )

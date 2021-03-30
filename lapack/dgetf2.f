@@ -12,7 +12,7 @@
 !     June 30, 1992
 !
 !     .. Scalar Arguments ..
-      INTEGER, intent(in) ::            LDA, M, N
+      INTEGER, value ::            LDA, M, N
       INTEGER, intent(inout) ::            INFO
 !     ..
 !     .. Array Arguments ..

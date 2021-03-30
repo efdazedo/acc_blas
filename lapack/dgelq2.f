@@ -133,7 +133,8 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      INTEGER            INFO, LDA, M, N
+      INTEGER,value ::            LDA, M, N
+      INTEGER, intent(inout) :: INFO
 !     ..
 !     .. Array Arguments ..
       DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )

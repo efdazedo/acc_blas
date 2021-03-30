@@ -207,8 +207,8 @@
 !     June 2013
 !
 !     .. Scalar Arguments ..
-      CHARACTER,intent(in)::          DIRECT, SIDE, STOREV, TRANS
-      INTEGER,intent(in)::            K, LDC, LDT, LDV, LDWORK, M, N
+      CHARACTER,value::          DIRECT, SIDE, STOREV, TRANS
+      INTEGER,value::            K, LDC, LDT, LDV, LDWORK, M, N
 !     ..
 !     .. Array Arguments ..
       DOUBLE PRECISION,intent(inout) ::   C( LDC, * ), T( LDT, * ) 

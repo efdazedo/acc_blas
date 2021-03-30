@@ -136,9 +136,9 @@
 !     December 2016
 !
 !     .. Scalar Arguments ..
-      CHARACTER,intent(in) ::          SIDE
-      INTEGER, intent(in) ::            INCV, LDC, M, N
-      DOUBLE PRECISION, intent(in) ::   TAU
+      CHARACTER,value ::          SIDE
+      INTEGER, value ::            INCV, LDC, M, N
+      DOUBLE PRECISION, value ::   TAU
 !     ..
 !     .. Array Arguments ..
       DOUBLE PRECISION, intent(inout) :: C( LDC, * ), V( * ), WORK( * )
