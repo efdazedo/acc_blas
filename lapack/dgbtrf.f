@@ -410,9 +410,9 @@
 !
                K2 = J - 1 + JB + J2
 #ifdef _OPENACC
-!$acc loop vector private(JJ,II,IP,TEMP)
+!!$acc loop vector private(JJ,II,IP,TEMP)
 #else
-!$omp parallel do simd private(JJ,II,IP,TEMP)
+!!$omp parallel do simd private(JJ,II,IP,TEMP)
 #endif
                DO 110 I = 1, J3
                   JJ = K2 + I
