@@ -177,8 +177,7 @@
 !$acc  loop vector                                                       &
 !$acc& collapse(2) private(TEMP) reduction(max:VALUE)
 #else
-!$omp  parallel do simd                                                  &
-!$omp& collapse(2) private(TEMP) reduction(max:VALUE)
+!$omp  parallel do simd collapse(2) private(TEMP) reduction(max:VALUE)
 #endif
          DO 20 J = 1, N
             DO 10 I = 1, M
@@ -192,9 +191,9 @@
 !
          VALUE = ZERO
 #ifdef _OPENACC
-!$acc loop vector private(SUM) reduction(max:VALUE)
+!$acc loop vector private(I,SUM) reduction(max:VALUE)
 #else
-!$omp parallel do simd private(SUM) reduction(max:VALUE)
+!$omp parallel do simd private(I,SUM) reduction(max:VALUE)
 #endif
          DO 40 J = 1, N
 
